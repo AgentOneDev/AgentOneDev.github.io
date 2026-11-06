@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moutrine William</title>
+<meta name="description" content="Moutrine William: cloud, DevOps and HashiCorp engineering.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Oxanium:wght@500;600;700&display=swap">
+<style>
+/* Layout: an operator console at night. Sticky top bar, hero split (identity | live terminal),
+   namespaced skills (cards or kubectl table), contact strip. Single dark theme by design. */
+:root{
+  --ink:#0a0e15;
+  --ink-glass:rgba(10,14,21,.8);
+  --panel:#0f1620;
+  --panel-hi:#151e2b;
+  --line:#223040;
+  --line-soft:rgba(34,48,64,.55);
+  --line-hi:#30445a;
+  --text:#dce4ed;
+  --dim:#8d9cb0;
+  --accent:#72d0c5;
+  --charge:#ff6ec7;
+  --accent-hi:#9be3da;
+  --accent-dim:rgba(114,208,197,.12);
+  --accent-edge:rgba(114,208,197,.45);
+  --coolant:#72d0c5;
+  --charge-dim:rgba(255,110,199,.28);
+  --fault:#e8857f;
+  --on-accent:#062420;
+  --f-display:"Oxanium","Bahnschrift","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --radius:4px;
+  --wrap:1160px;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  background:
+    radial-gradient(1100px 520px at 88% -8%, rgba(114,208,197,.09), transparent 62%),
+    radial-gradient(900px 460px at -8% 6%, rgba(114,208,197,.05), transparent 60%),
+    var(--ink);
+  color:var(--text);
+  font-family:var(--f-body);
+  font-size:1rem;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+#sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+.page{position:relative;z-index:1}
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--coolant)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+h1,h2,h3{text-wrap:balance}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--ink-glass);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:flex-end;padding-block:12px}
+.nav{display:flex;gap:2px;align-items:center}
+.nav a{font-family:var(--f-mono);font-size:.8125rem;color:var(--dim);text-decoration:none;padding:8px 10px;border-radius:3px;transition:color .15s,background .15s}
+.nav a:hover{color:var(--text);background:var(--panel-hi)}
+.nav a.cta{color:var(--on-accent);background:var(--accent);font-weight:500;margin-left:8px}
+.nav a.cta:hover{background:var(--accent-hi)}
+
+/* Hero */
+.hero{padding-block:clamp(44px,8vw,96px) clamp(44px,7vw,80px)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(36px,5vw,72px);align-items:center}
+@media (max-width:920px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--coolant);margin:0 0 20px}
+.name{font-family:var(--f-display);font-weight:600;font-size:clamp(2.9rem,8vw,5.25rem);line-height:.9;letter-spacing:-.01em;margin:0;display:flex;flex-direction:column}
+.name .caret{display:inline-block;width:.36em;height:.7em;margin-left:.1em;vertical-align:-.02em;background:var(--accent);box-shadow:0 0 22px rgba(114,208,197,.45);animation:caret 1.4s ease-in-out infinite}
+@keyframes caret{0%,100%{opacity:1}50%{opacity:.15}}
+.signal{display:flex;flex-wrap:wrap;gap:8px 22px;margin:30px 0 0;padding:0;list-style:none;font-family:var(--f-mono);font-size:.8125rem;color:var(--dim);font-variant-numeric:tabular-nums}
+.signal b{color:var(--text);font-weight:500}
+.signal li{display:inline-flex;align-items:center;gap:8px}
+.signal li::before{content:"";width:5px;height:5px;background:var(--coolant);display:inline-block}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:.8125rem;font-weight:500;padding:12px 20px;text-decoration:none;border:1px solid transparent;cursor:pointer;background:none;transition:background .2s,border-color .2s,color .2s}
+.btn-primary{background:var(--accent);color:var(--on-accent);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.btn-primary:hover{background:var(--accent-hi)}
+.btn-primary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--on-accent)}
+.btn-ghost{color:var(--text);border-color:var(--line-hi);border-radius:3px}
+.btn-ghost:hover{border-color:var(--coolant);color:var(--coolant)}
+
+/* Terminal */
+.term{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 40px 90px -50px rgba(0,0,0,.9);transition:border-color .2s}
+.term:focus-within{border-color:var(--line-hi)}
+.term::before,.term::after{content:"";position:absolute;width:18px;height:18px;border:0 solid var(--accent);pointer-events:none}
+.term::before{top:-7px;left:-7px;border-width:1px 0 0 1px}
+.term::after{bottom:-7px;right:-7px;border-width:0 1px 1px 0}
+.term-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:.75rem;color:var(--dim)}
+.term-bar span{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.led{width:7px;height:7px;border-radius:50%;background:var(--coolant);box-shadow:0 0 10px var(--coolant);flex:none}
+.term-out{height:300px;overflow-y:auto;padding:14px 16px 6px;font-family:var(--f-mono);font-size:.8125rem;line-height:1.7;overflow-wrap:anywhere}
+.term-out > div{white-space:pre-wrap}
+.term-out .l-pre{white-space:pre;overflow-x:auto;color:var(--text);padding-bottom:2px}
+.l-cmd{color:var(--text)}
+.l-cmd .p{color:var(--coolant)}
+.l-out{color:var(--text);opacity:.86}
+.l-hi{color:var(--accent)}
+.l-ok{color:var(--coolant)}
+.l-dim{color:var(--dim)}
+.l-err{color:var(--fault)}
+.l-key{color:var(--accent)}
+.term-out .l-help{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:2px 16px;margin:2px 0 4px;white-space:normal}
+.l-help .hcmd{font:inherit;color:var(--accent);background:none;border:0;padding:0;text-align:left;cursor:pointer;text-decoration:underline dotted;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .15s}
+.l-help .hcmd:hover{text-decoration-color:var(--accent)}
+.l-help span{color:var(--dim)}
+.term-out .l-swatch{display:flex;margin:6px 0 2px}
+.l-swatch i{display:block;width:18px;height:12px}
+.term-out a{color:var(--coolant)}
+.term-in{display:flex;align-items:center;gap:10px;padding:10px 16px 12px;font-family:var(--f-mono);font-size:.875rem;border-top:1px solid var(--line-soft)}
+.term-in label{color:var(--coolant);flex:none}
+.term-in input{flex:1;min-width:0;background:transparent;border:0;color:var(--text);font:inherit;caret-color:var(--accent);padding:4px 0}
+.term-in input:focus{outline:none}
+.term-in input::placeholder{color:var(--dim);opacity:.7}
+.term-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 16px}
+.term-chips button{font-family:var(--f-mono);font-size:.71875rem;color:var(--dim);background:var(--panel-hi);border:1px solid var(--line);border-radius:3px;padding:5px 9px;cursor:pointer;transition:color .15s,border-color .15s}
+.term-chips button:hover{color:var(--coolant);border-color:var(--coolant)}
+
+/* Sections */
+.block{padding-block:clamp(60px,8vw,104px);border-top:1px solid var(--line)}
+section[id]{scroll-margin-top:72px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 24px;margin-bottom:30px}
+.sec-head h2,.contact-grid h2{font-family:var(--f-display);font-weight:600;font-size:clamp(1.85rem,3.8vw,2.5rem);line-height:1.05;margin:0}
+.sec-head p{margin:8px 0 0;color:var(--dim);max-width:60ch}
+.cmd{font-family:var(--f-mono);font-size:.8125rem;color:var(--dim);white-space:nowrap}
+.cmd::before{content:"$ ";color:var(--coolant)}
+
+/* Skills */
+.controls{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.ns-row{display:flex;flex-wrap:wrap;gap:6px}
+.ns{font-family:var(--f-mono);font-size:.75rem;padding:6px 10px;border:1px solid var(--line);background:transparent;color:var(--dim);border-radius:3px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:color .15s,border-color .15s,background .15s}
+.ns:hover{color:var(--text);border-color:var(--line-hi)}
+.ns .n{color:var(--text);opacity:.55;font-variant-numeric:tabular-nums}
+.ns[aria-pressed="true"]{border-color:var(--accent-edge);color:var(--accent);background:var(--accent-dim)}
+.ns[aria-pressed="true"] .n{color:var(--accent);opacity:.8}
+.tool-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.search{flex:1 1 260px;max-width:420px;display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--panel);padding:0 12px;border-radius:3px;transition:border-color .15s}
+.search:focus-within{border-color:var(--coolant)}
+.search span{font-family:var(--f-mono);color:var(--coolant);font-size:.8125rem}
+.search input{flex:1;min-width:0;background:transparent;border:0;color:var(--text);font:inherit;font-size:.9375rem;padding:10px 0}
+.search input:focus{outline:none}
+.search input::placeholder{color:var(--dim)}
+.tool-right{display:flex;align-items:center;gap:14px}
+.count{font-family:var(--f-mono);font-size:.75rem;color:var(--dim);font-variant-numeric:tabular-nums}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.seg button{font-family:var(--f-mono);font-size:.75rem;background:transparent;color:var(--dim);border:0;padding:8px 12px;cursor:pointer}
+.seg button + button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--panel-hi);color:var(--text)}
+
+.cards{columns:3 300px;column-gap:16px}
+.card{break-inside:avoid;display:inline-block;width:100%;margin:0 0 16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 20px;transition:border-color .2s}
+.card:hover{border-color:var(--line-hi)}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:var(--f-mono);font-size:.71875rem;color:var(--dim)}
+.phase{display:inline-flex;align-items:center;gap:6px}
+.phase i{width:6px;height:6px;border-radius:50%;background:var(--coolant)}
+.card h3{font-family:var(--f-display);font-weight:600;font-size:1.25rem;margin:10px 0 0;letter-spacing:.005em}
+.chips{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.chips li{font-size:.875rem;line-height:1.4;padding:5px 10px;border:1px solid var(--line);background:var(--panel-hi);border-radius:3px;transition:border-color .15s,box-shadow .2s}
+.chips li:hover{border-color:var(--coolant);box-shadow:0 0 18px -8px var(--coolant)}
+mark{background:transparent;color:var(--accent);font-weight:600}
+.empty-q{border:1px dashed var(--line-hi);border-radius:var(--radius);padding:28px;color:var(--dim);font-family:var(--f-mono);font-size:.875rem}
+
+.ktable-wrap{overflow:auto;max-height:540px;border:1px solid var(--line);background:var(--panel);border-radius:var(--radius)}
+.ktable{width:100%;border-collapse:collapse;font-family:var(--f-mono);font-size:.8125rem;white-space:nowrap}
+.ktable th{text-align:left;font-weight:500;color:var(--dim);padding:10px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel);letter-spacing:.04em}
+.ktable td{padding:7px 18px;border-bottom:1px solid var(--line-soft)}
+.ktable tr:hover td{background:var(--panel-hi)}
+.ktable .c-ns{color:var(--dim)}
+.st-run{color:var(--coolant)}
+
+/* Contact */
+.contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:clamp(20px,5vw,64px);align-items:center}
+@media (max-width:860px){.contact-grid{grid-template-columns:minmax(0,1fr)}}
+.c-list{display:grid;gap:10px;min-width:0}
+.c-row .v small{display:block;margin-top:4px;font-size:.75rem;color:var(--dim)}
+.c-row{display:grid;grid-template-columns:96px minmax(0,1fr) auto;align-items:center;gap:14px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+.c-row .k{font-family:var(--f-mono);font-size:.71875rem;color:var(--dim);text-transform:uppercase;letter-spacing:.12em}
+.c-row .v{overflow-wrap:anywhere;font-family:var(--f-mono);font-size:.875rem}
+.c-row .v a{color:var(--text);text-decoration-color:var(--coolant);text-underline-offset:3px}
+.c-row .v a:hover{color:var(--coolant)}
+.copy{font-family:var(--f-mono);font-size:.71875rem;color:var(--dim);background:var(--panel-hi);border:1px solid var(--line);border-radius:3px;padding:6px 10px;cursor:pointer;transition:color .15s,border-color .15s}
+.copy:hover{color:var(--coolant);border-color:var(--coolant)}
+@media (max-width:520px){.c-row{grid-template-columns:minmax(0,1fr) auto}.c-row .k{grid-column:1 / -1}}
+
+footer{border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;padding-block:24px;font-family:var(--f-mono);font-size:.75rem;color:var(--dim)}
+
+/* Custom cursor: only for mouse users, only once the script has set html.cc */
+html.cc, html.cc *{cursor:none}
+html.cc input[type="text"], html.cc input[type="search"]{cursor:text}
+.cur{position:fixed;left:0;top:0;pointer-events:none;z-index:100;opacity:0;transition:opacity .2s;will-change:transform}
+.cur.on{opacity:1}
+.cur.hide{opacity:0}
+.cur svg{display:block;width:28px;height:32px;overflow:visible;transform-origin:2px 2px;transition:transform .2s ease;filter:drop-shadow(0 0 4px var(--charge-dim))}
+.cur .bolt{fill:var(--charge);stroke:var(--ink);stroke-width:1.2;stroke-linejoin:round}
+.cur.hover svg{transform:scale(1.15) rotate(-8deg);animation:charge 1.6s ease-in-out infinite}
+.cur.down svg{transform:scale(.88)}
+.cur.hover.down svg{transform:scale(1) rotate(-8deg)}
+@keyframes charge{0%,100%{filter:drop-shadow(0 0 4px var(--charge-dim))}50%{filter:drop-shadow(0 0 10px var(--charge))}}
+.cur-pulse{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:99}
+.cur-pulse::before{content:"";position:absolute;inset:-14px;border-radius:50%;border:1px solid var(--charge);box-shadow:0 0 14px var(--charge-dim);animation:pulse .6s ease-out forwards}
+@keyframes pulse{from{transform:scale(.6);opacity:.9}to{transform:scale(2.6);opacity:0}}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important}
+  .cur.hover svg{animation:none}
+  .name .caret{animation:none}
+  .cur-pulse{display:none}
+}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<div class="page">
+  <header class="top">
+    <div class="wrap">
+      <nav class="nav" aria-label="Sections">
+        <a href="#skills">Skills</a>
+        <a class="cta" href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-name">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">Software Development · Cloud &amp; DevOps · Platform Engineering</p>
+          <h1 class="name" id="hero-name"><span>Moutrine<span class="caret" aria-hidden="true"></span></span></h1>
+          <ul class="signal" aria-label="At a glance">
+            <li><span><b id="stat-clouds">5</b> cloud platforms</span></li>
+            <li><span><b id="stat-tools">68</b> tools &amp; practices</span></li>
+            <li><span><b id="stat-domains">13</b> skill areas</span></li>
+          </ul>
+          <div class="actions">
+            <a class="btn btn-primary" href="#skills">Explore skills</a>
+            <a class="btn btn-ghost" href="https://www.linkedin.com/in/moutrine-william" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+          </div>
+        </div>
+
+        <div class="term" id="terminal">
+          <div class="term-bar">
+            <span><i class="led" aria-hidden="true"></i>visitor@moutrine-william:~</span>
+          </div>
+          <div class="term-out" id="term-out" role="log" aria-live="polite" aria-label="Terminal output">
+            <div class="l-cmd"><span class="p" aria-hidden="true">❯ </span>whoami</div>
+            <div class="l-hi">Moutrine William</div>
+            <div class="l-out">Software Development · Cloud &amp; DevOps · Platform Engineering</div>
+            <div class="l-cmd"><span class="p" aria-hidden="true">❯ </span>ls skills</div>
+            <div class="l-ok">cloud/  containers/  hashicorp/  iac/  cicd/  data/  observability/  languages/  systems/  networking/  security/  ai/  practice/</div>
+            <div class="l-dim">Type help, or tap a command below.</div>
+          </div>
+          <form class="term-in" id="term-form" autocomplete="off">
+            <label for="term-input" aria-label="Command">❯</label>
+            <input id="term-input" type="text" spellcheck="false" autocapitalize="off" placeholder="type a command, e.g. help" enterkeyhint="send">
+          </form>
+          <div class="term-chips" aria-label="Suggested commands">
+            <button type="button" data-run="help">help</button>
+            <button type="button" data-run="neofetch">neofetch</button>
+            <button type="button" data-run="ls skills">ls skills</button>
+            <button type="button" data-run="docker ps">docker ps</button>
+            <button type="button" data-run="ping moutrine">ping moutrine</button>
+            <button type="button" data-run="contact">contact</button>
+            <button type="button" data-run="sudo hire">sudo hire</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="skills" aria-labelledby="skills-h">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2 id="skills-h">Skills</h2>
+            <p>Grouped the way a cluster groups workloads. Pick an area, search for a tool, or switch to the kubectl view.</p>
+          </div>
+          <span class="cmd">kubectl get skills -A</span>
+        </div>
+
+        <div class="controls">
+          <div class="ns-row" id="ns-row" role="group" aria-label="Skill areas"></div>
+          <div class="tool-row">
+            <label class="search" for="skill-q">
+              <span aria-hidden="true">/</span>
+              <input id="skill-q" type="search" placeholder="Filter skills, e.g. vault or sql" autocomplete="off" spellcheck="false">
+            </label>
+            <div class="tool-right">
+              <span class="count" id="skill-count" aria-live="polite"></span>
+              <div class="seg" role="group" aria-label="View">
+                <button type="button" id="v-cards" aria-pressed="true">Cards</button>
+                <button type="button" id="v-table" aria-pressed="false">kubectl</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-cards"><div class="cards" id="cards"></div></div>
+        <div id="view-table" hidden>
+          <div class="ktable-wrap">
+            <table class="ktable">
+              <thead><tr><th scope="col">NAMESPACE</th><th scope="col">NAME</th><th scope="col">READY</th><th scope="col">STATUS</th></tr></thead>
+              <tbody id="ktbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <p class="empty-q" id="skills-empty" hidden></p>
+      </div>
+    </section>
+
+    <section class="block" id="contact" aria-labelledby="contact-h">
+      <div class="wrap contact-grid">
+        <h2 id="contact-h">Contact</h2>
+        <div class="c-list">
+        <div class="c-row">
+          <span class="k">LinkedIn</span>
+          <span class="v" id="c-li"><a href="https://www.linkedin.com/in/moutrine-william" target="_blank" rel="noopener noreferrer">linkedin.com/in/moutrine-william</a></span>
+          <button type="button" class="copy" data-copy="https://www.linkedin.com/in/moutrine-william" data-target="c-li">Copy</button>
+        </div>
+        <div class="c-row">
+          <span class="k">Pigeon</span>
+          <span class="v">IP over Avian Carriers, <a href="https://www.rfc-editor.org/info/rfc1149/" target="_blank" rel="noopener noreferrer">RFC 1149</a><small id="pigeon-status" aria-live="polite">Latency: hours to days. Packet loss: likely.</small></span>
+          <button type="button" class="copy" id="pigeon-ping">Ping</button>
+        </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Moutrine William</span>
+      <span>One static HTML page · no cookies · no trackers · fonts from Google Fonts</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const PROFILE = {
+    name: "Moutrine William",
+    linkedin: "https://www.linkedin.com/in/moutrine-william"
+  };
+
+  const GROUPS = [
+    { ns: "cloud",         label: "Cloud platforms",            items: ["AWS", "Azure", "Google Cloud", "Oracle Cloud", "IBM Cloud"] },
+    { ns: "containers",    label: "Containers & orchestration", items: ["Docker", "Podman", "Kubernetes"] },
+    { ns: "hashicorp",     label: "HashiCorp",                  items: ["Terraform", "Vault", "Boundary"] },
+    { ns: "iac",           label: "Infrastructure & config",    items: ["Bash", "Linux configuration"] },
+    { ns: "cicd",          label: "CI/CD",                      items: ["GitHub Actions", "GitLab CI", "Jira"] },
+    { ns: "data",          label: "Storage & databases",        items: ["MinIO", "PostgreSQL", "MySQL", "Oracle Database", "MongoDB", "Redis", "Caching", "File systems & file representation"] },
+    { ns: "observability", label: "Observability",              items: ["Prometheus", "Grafana", "Nagios"] },
+    { ns: "languages",     label: "Languages",                  items: ["Go", "Python", "Bash", "JavaScript / TypeScript", "Java", "SQL", "C / C++", "HTML", "CSS"] },
+    { ns: "systems",       label: "Linux systems",              items: ["RHEL", "Fedora", "Ubuntu", "Oracle Linux"] },
+    { ns: "networking",    label: "Networking",                 items: ["TCP/IP", "OSI model", "Subnetting / CIDR", "IPv4", "IPv6", "DNS", "DHCP", "NTP", "HTTP / HTTPS", "TLS / SSL", "Certificates / PKI", "VLANs", "VCN", "NAT", "Nginx", "HAProxy", "IPsec", "SSH", "SSH tunneling", "Wireshark", "traceroute"] },
+    { ns: "security",      label: "Security",                   items: ["IAM", "Secrets management"] },
+    { ns: "ai",            label: "AI & machine learning",      items: ["AI & prompt engineering", "Machine learning algorithms"] },
+    { ns: "practice",      label: "Ways of working",            items: ["Agile / Scrum", "Sprints", "Code reviews", "Technical writing"] }
+  ];
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const el = (tag, attrs = {}, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else n.setAttribute(k, v === true ? "" : String(v));
+    }
+    for (const k of kids) if (k != null) n.append(k);
+    return n;
+  };
+  const slug = s => s.toLowerCase().replace(/\+\+/g, "pp").replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  /* ---------- Stats ---------- */
+  const uniqueAll = new Set(GROUPS.flatMap(g => g.items.map(i => i.toLowerCase())));
+  $("#stat-clouds").textContent = GROUPS.find(g => g.ns === "cloud").items.length;
+  $("#stat-tools").textContent = uniqueAll.size;
+  $("#stat-domains").textContent = GROUPS.length;
+
+  /* ---------- Skills ---------- */
+  const state = { ns: "all", q: "", view: "cards" };
+  const nsRow = $("#ns-row"), cards = $("#cards"), tbody = $("#ktbody");
+  const countEl = $("#skill-count"), emptyEl = $("#skills-empty");
+
+  function nsButton(id, n) {
+    const b = el("button", { type: "button", class: "ns", "data-ns": id, "aria-pressed": "false" },
+      id, el("span", { class: "n", text: String(n) }));
+    b.addEventListener("click", () => { state.ns = id; render(); });
+    return b;
+  }
+  nsRow.append(nsButton("all", uniqueAll.size));
+  GROUPS.forEach(g => nsRow.append(nsButton(g.ns, g.items.length)));
+
+  function matches(item, q) {
+    if (!q) return true;
+    const qs = slug(q);
+    return item.toLowerCase().includes(q) || (qs && slug(item).includes(qs));
+  }
+  function highlight(text, q) {
+    const f = document.createDocumentFragment();
+    const i = q ? text.toLowerCase().indexOf(q) : -1;
+    if (i < 0) { f.append(text); return f; }
+    f.append(text.slice(0, i), el("mark", { text: text.slice(i, i + q.length) }), text.slice(i + q.length));
+    return f;
+  }
+  function card(g, items, q) {
+    return el("article", { class: "card" },
+      el("header", { class: "card-h" },
+        el("span", { text: "ns/" + g.ns }),
+        el("span", { class: "phase" }, el("i", { "aria-hidden": "true" }), `${g.items.length} skill${g.items.length === 1 ? "" : "s"}`)),
+      el("h3", { text: g.label }),
+      el("ul", { class: "chips" }, ...items.map(i => el("li", {}, highlight(i, q)))));
+  }
+  function row(g, item, q) {
+    const qs = q ? slug(q) : "";
+    return el("tr", {},
+      el("td", { class: "c-ns", text: g.ns }),
+      el("td", {}, highlight(slug(item), qs)),
+      el("td", { text: "1/1" }),
+      el("td", { class: "st-run", text: "Running" }));
+  }
+
+  function render() {
+    nsRow.querySelectorAll(".ns").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.ns === state.ns)));
+    const q = state.q.trim().toLowerCase();
+    const groups = GROUPS.filter(g => state.ns === "all" || g.ns === state.ns);
+    const shown = new Set();
+    cards.replaceChildren();
+    tbody.replaceChildren();
+    for (const g of groups) {
+      const items = g.items.filter(i => matches(i, q));
+      if (!items.length) continue;
+      items.forEach(i => shown.add(i.toLowerCase()));
+      cards.append(card(g, items, q));
+      items.forEach(i => tbody.append(row(g, i, q)));
+    }
+    const n = shown.size;
+    countEl.textContent = q ? `${n} match${n === 1 ? "" : "es"}` : `${n} skill${n === 1 ? "" : "s"}`;
+    const nothing = n === 0;
+    emptyEl.hidden = !nothing;
+    if (nothing) emptyEl.textContent = `No skill matches “${state.q.trim()}”${state.ns !== "all" ? ` in ${state.ns}` : ""}. Try a tool name like terraform, or pick “all”.`;
+    $("#view-cards").hidden = nothing || state.view !== "cards";
+    $("#view-table").hidden = nothing || state.view !== "table";
+    $("#v-cards").setAttribute("aria-pressed", String(state.view === "cards"));
+    $("#v-table").setAttribute("aria-pressed", String(state.view === "table"));
+  }
+
+  const qInput = $("#skill-q");
+  qInput.addEventListener("input", () => { state.q = qInput.value; render(); });
+  qInput.addEventListener("keydown", e => { if (e.key === "Escape") { qInput.value = ""; state.q = ""; render(); } });
+  $("#v-cards").addEventListener("click", () => { state.view = "cards"; render(); });
+  $("#v-table").addEventListener("click", () => { state.view = "table"; render(); });
+  render();
+
+  /* ---------- Terminal ---------- */
+  const out = $("#term-out"), form = $("#term-form"), input = $("#term-input");
+  const history = [];
+  let hIndex = 0;
+
+  const RFC1149 = "https://www.rfc-editor.org/info/rfc1149/";
+  const line = (content, cls = "l-out") => {
+    const d = el("div", { class: cls });
+    if (typeof content === "string") d.textContent = content || " "; else d.append(content);
+    out.append(d);
+  };
+  const echo = cmd => out.append(el("div", { class: "l-cmd" }, el("span", { class: "p", "aria-hidden": "true", text: "❯ " }), cmd));
+  const table = rows => {
+    const widths = rows[0].map((_, c) => Math.max(...rows.map(r => r[c].length)));
+    const text = rows.map(r => r.map((v, c) => (c === r.length - 1 ? v : v.padEnd(widths[c] + 3))).join("")).join("\n");
+    out.append(el("div", { class: "l-pre", text }));
+  };
+  const link = (label, href) => el("a", { href, target: "_blank", rel: "noopener noreferrer", text: label });
+  const scrollTo = id => document.getElementById(id).scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth" });
+  const toEnd = () => { out.scrollTop = out.scrollHeight; };
+  const later = (ms, fn) => setTimeout(() => { fn(); toEnd(); }, reduceMotion.matches ? 0 : ms);
+  const findArea = p => {
+    const q = slug(String(p).replace(/^skills\//, "").replace(/\/$/, ""));
+    return q ? (GROUPS.find(g => g.ns === q) || GROUPS.find(g => slug(g.label).includes(q))) : null;
+  };
+  const items = ns => GROUPS.find(g => g.ns === ns).items.join(", ");
+  const hash12 = s => {
+    let h = 2166136261;
+    for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+    return (h.toString(16).padStart(8, "0") + ((h ^ 0x5bd1e995) >>> 0).toString(16).padStart(8, "0")).slice(0, 12);
+  };
+
+  const HELP = [
+    ["whoami", "Name and focus"],
+    ["neofetch", "The whole stack at a glance"],
+    ["ls skills", "List skill areas"],
+    ["cat skills/cloud", "One area's skills (any area works)"],
+    ["docker ps", "Skill areas as running containers (podman ps works too)"],
+    ["kubectl get pods -A", "Every skill as a pod"],
+    ["git status", "State of the career repo"],
+    ["ping moutrine", "Check that I'm reachable"],
+    ["ping pigeon", "Test the RFC 1149 contact method"],
+    ["traceroute moutrine", "How a message reaches me"],
+    ["contact", "Where to reach me"],
+    ["sudo hire", "Scroll to the contact section"],
+    ["clear", "Clear this terminal"]
+  ];
+
+  const CMDS = {
+    help() {
+      line("Tap a command, or type it.", "l-dim");
+      const grid = el("div", { class: "l-help" });
+      HELP.forEach(([c, d]) => grid.append(el("button", { type: "button", class: "hcmd", "data-cmd": c, text: c }), el("span", { text: d })));
+      out.append(grid);
+    },
+    whoami() {
+      line(PROFILE.name, "l-hi");
+      line("Software Development · Cloud & DevOps · Platform Engineering");
+    },
+    neofetch() {
+      line("visitor@moutrine-william", "l-hi");
+      line("------------------------", "l-dim");
+      [
+        ["Role", "Software Development · Cloud & DevOps · Platform Engineering"],
+        ["OS", `Linux (${items("systems")})`],
+        ["Shell", "bash"],
+        ["Clouds", items("cloud")],
+        ["Containers", items("containers")],
+        ["HashiCorp", items("hashicorp")],
+        ["CI/CD", items("cicd")],
+        ["Languages", items("languages")],
+        ["Data", items("data")],
+        ["Monitoring", items("observability")],
+        ["Network", `${GROUPS.find(g => g.ns === "networking").items.length} protocols & tools`],
+        ["Skills", `${uniqueAll.size} across ${GROUPS.length} areas`],
+        ["Uptime", "always learning"]
+      ].forEach(([k, v]) => out.append(el("div", { class: "l-out" }, el("span", { class: "l-key", text: k + ": " }), v)));
+      out.append(el("div", { class: "l-swatch", "aria-hidden": "true" },
+        ...["--ink", "--panel-hi", "--line-hi", "--dim", "--text", "--accent", "--charge", "--fault"].map(t => el("i", { style: `background:var(${t})` }))));
+    },
+    ls(args) {
+      const p = (args[0] || "").replace(/\/$/, "");
+      if (!p || p === "." || p === "~") { line("skills/", "l-ok"); return; }
+      if (p === "skills") {
+        line(GROUPS.map(g => g.ns + "/").join("  "), "l-ok");
+        line("Try: cat skills/networking", "l-dim");
+        return;
+      }
+      const g = findArea(p);
+      if (g) { line(g.items.map(slug).join("  ")); return; }
+      line(`ls: ${p}: No such file or directory`, "l-err");
+    },
+    cat(args) {
+      const p = (args[0] || "").replace(/\/$/, "");
+      if (!p) { line("usage: cat skills/<area>   e.g. cat skills/cloud", "l-err"); return; }
+      if (p === "skills") { line("cat: skills: Is a directory", "l-err"); return; }
+      const g = findArea(p);
+      if (!g) { line(`cat: ${p}: No such file or directory`, "l-err"); return; }
+      line(`# ${g.label}`, "l-hi");
+      line(g.items.join(" · "));
+    },
+    skills(args) { if (args[0]) CMDS.cat(["skills/" + args[0]]); else CMDS.ls(["skills"]); },
+    docker(args) {
+      if ((args[0] || "").toLowerCase() !== "ps") { line("usage: docker ps", "l-err"); return; }
+      table([["CONTAINER ID", "IMAGE", "STATUS", "NAMES"],
+        ...GROUPS.map(g => [hash12(g.ns), `skills/${g.ns}:${g.items.length}`, "Up (healthy)", g.ns])]);
+    },
+    kubectl(args) {
+      const [verb, res, ...rest] = args;
+      if (verb !== "get" || !res) { line("usage: kubectl get pods -n <area> | kubectl get pods -A | kubectl get ns", "l-err"); return; }
+      if (["ns", "namespace", "namespaces"].includes(res)) {
+        table([["NAME", "STATUS"], ...GROUPS.map(g => [g.ns, "Active"])]);
+        return;
+      }
+      if (!["pods", "pod", "po", "skills"].includes(res)) { line(`error: the server doesn't have a resource type "${res}"`, "l-err"); return; }
+      let ns = null, all = false;
+      for (let i = 0; i < rest.length; i++) {
+        const r = rest[i];
+        if (r === "-n" || r === "--namespace") ns = (rest[++i] || "").toLowerCase();
+        else if (r.startsWith("--namespace=")) ns = r.slice(12).toLowerCase();
+        else if (r === "-A" || r === "--all-namespaces") all = true;
+      }
+      if (!all && !ns) { line("No resources found in default namespace.", "l-dim"); line("Try: kubectl get pods -A  or  kubectl get pods -n cloud", "l-dim"); return; }
+      const gs = all ? GROUPS : GROUPS.filter(g => g.ns === ns);
+      if (!gs.length) { line(`No resources found in ${ns} namespace.`, "l-dim"); return; }
+      const rows = [all ? ["NAMESPACE", "NAME", "READY", "STATUS"] : ["NAME", "READY", "STATUS"]];
+      gs.forEach(g => g.items.forEach(i => rows.push(all ? [g.ns, slug(i), "1/1", "Running"] : [slug(i), "1/1", "Running"])));
+      table(rows);
+    },
+    git(args) {
+      if ((args[0] || "").toLowerCase() !== "status") { line("usage: git status", "l-err"); return; }
+      line("On branch main");
+      line(`Your branch is ahead of 'origin/main' by ${uniqueAll.size} commits (one per skill).`);
+      line('  (use "contact" to open a pull request)', "l-dim");
+      line("");
+      line("nothing to commit, working tree clean", "l-ok");
+    },
+    ping(args) {
+      const host = (args[0] || "").toLowerCase();
+      if (!host) { line("usage: ping moutrine", "l-err"); return; }
+      if (host.includes("pigeon")) {
+        line(`PING ${host} (IP over Avian Carriers, RFC 1149): 56 data bytes`);
+        [0, 1, 2].forEach(i => later(700 * (i + 1), () => line(`Request timeout for icmp_seq ${i}`, "l-dim")));
+        later(2800, () => {
+          line(`--- ${host} ping statistics ---`);
+          line("3 packets transmitted, 0 packets received, 100.0% packet loss");
+          line("The pigeon is on a lunch break. LinkedIn is faster.", "l-hi");
+        });
+        return;
+      }
+      if (host !== "moutrine" && host !== "moutrine-william") { line(`ping: cannot resolve ${host}: Unknown host`, "l-err"); return; }
+      line(`PING ${host} (10.13.67.1): 56 data bytes`);
+      [0, 1, 2].forEach(i => later(450 * (i + 1), () => line(`64 bytes from ${host}: icmp_seq=${i} ttl=64 time=${(0.3 + Math.random() * 0.2).toFixed(2)} ms`)));
+      later(1500, () => {
+        line(`--- ${host} ping statistics ---`);
+        line("3 packets transmitted, 3 packets received, 0.0% packet loss");
+        line("Reachable. Fastest route: type contact", "l-ok");
+      });
+    },
+    traceroute(args) {
+      const host = (args[0] || "moutrine").toLowerCase();
+      if (host !== "moutrine" && host !== "moutrine-william") { line(`traceroute: unknown host ${host}`, "l-err"); return; }
+      line(`traceroute to ${host}, 30 hops max, 60 byte packets`);
+      const hops = [["your-browser.local", "0.31"], ["linkedin.com", "8.42"], ["inbox.moutrine", "11.07"], ["moutrine", "12.66"]];
+      hops.forEach(([n, t], i) => later(400 * (i + 1), () => line(` ${i + 1}  ${n.padEnd(22)}${t} ms`, i === hops.length - 1 ? "l-ok" : "l-out")));
+    },
+    contact() {
+      out.append(el("div", { class: "l-out" }, "LinkedIn  ", link("linkedin.com/in/moutrine-william", PROFILE.linkedin)));
+      out.append(el("div", { class: "l-dim" }, "Pigeon    IP over Avian Carriers, ", link("RFC 1149", RFC1149), " (expect high latency)"));
+    },
+    sudo(args) {
+      if ((args[0] || "").toLowerCase() === "hire") {
+        line("[sudo] password for visitor: ********", "l-dim");
+        line("Access granted. Scrolling to contact.", "l-ok");
+        setTimeout(() => scrollTo("contact"), 450);
+      } else {
+        line('sudo: only "sudo hire" is allowed here', "l-err");
+      }
+    },
+    clear() { out.replaceChildren(); }
+  };
+  CMDS.podman = CMDS.docker;
+
+  function run(raw) {
+    const cmd = raw.trim();
+    if (!cmd) return;
+    echo(cmd);
+    history.push(cmd);
+    hIndex = history.length;
+    const [name, ...args] = cmd.split(/\s+/);
+    const key = name.toLowerCase();
+    const fn = Object.prototype.hasOwnProperty.call(CMDS, key) ? CMDS[key] : null;
+    if (fn) fn(args);
+    else line(`command not found: ${name}. Type "help" to see commands.`, "l-err");
+    toEnd();
+  }
+
+  form.addEventListener("submit", e => { e.preventDefault(); run(input.value); input.value = ""; });
+  input.addEventListener("keydown", e => {
+    if (e.key === "ArrowUp") {
+      if (hIndex > 0) { hIndex--; input.value = history[hIndex]; }
+      e.preventDefault();
+    } else if (e.key === "ArrowDown") {
+      if (hIndex < history.length - 1) { hIndex++; input.value = history[hIndex]; }
+      else { hIndex = history.length; input.value = ""; }
+      e.preventDefault();
+    }
+  });
+  out.addEventListener("click", e => {
+    const b = e.target instanceof Element ? e.target.closest("[data-cmd]") : null;
+    if (b) run(b.dataset.cmd);
+  });
+  document.querySelectorAll("[data-run]").forEach(b => b.addEventListener("click", () => run(b.dataset.run)));
+
+  /* ---------- Pigeon contact (RFC 1149) ---------- */
+  const pBtn = $("#pigeon-ping"), pStatus = $("#pigeon-status");
+  if (pBtn && pStatus) {
+    let busy = false;
+    pBtn.addEventListener("click", () => {
+      if (busy) return;
+      busy = true;
+      pBtn.textContent = "In flight…";
+      pStatus.textContent = "Packet released. Estimated arrival: sometime this week.";
+      setTimeout(() => {
+        pBtn.textContent = "Ping";
+        pStatus.textContent = "Request timed out: 1 sent, 0 received, 100% packet loss. LinkedIn is faster.";
+        busy = false;
+      }, reduceMotion.matches ? 300 : 1800);
+    });
+  }
+
+  /* ---------- Copy button ---------- */
+  document.querySelectorAll("[data-copy]").forEach(btn => {
+    const label = btn.textContent;
+    const reset = () => setTimeout(() => { btn.textContent = label; }, 1800);
+    const fallback = () => {
+      const target = document.getElementById(btn.dataset.target);
+      const range = document.createRange();
+      range.selectNodeContents(target);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      btn.textContent = "Selected";
+      reset();
+    };
+    btn.addEventListener("click", () => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(btn.dataset.copy).then(() => { btn.textContent = "Copied"; reset(); }, fallback);
+      } else {
+        fallback();
+      }
+    });
+  });
+
+  /* ---------- Custom cursor: pink zigzag arrow (mouse only) ---------- */
+  if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    const NS = "http://www.w3.org/2000/svg";
+    const cur = el("div", { class: "cur", "aria-hidden": "true" });
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 28 32");
+    svg.setAttribute("focusable", "false");
+    const bolt = document.createElementNS(NS, "path");
+    bolt.setAttribute("class", "bolt");
+    // Arrowhead with its tip at (2,2), then a lightning-bolt tail instead of a straight stem.
+    bolt.setAttribute("d", "M2 2 L2 20 L7 15.5 L9.5 21 L7 22 L13 30.5 L12 23.5 L14.5 22.5 L11 15.5 L17 15.5 Z");
+    svg.append(bolt);
+    cur.append(svg);
+    document.body.append(cur);
+    document.documentElement.classList.add("cc");
+    const INTERACTIVE = "a, button, label.search, .chips li";
+    const TEXT = 'input[type="text"], input[type="search"]';
+
+    document.addEventListener("pointermove", e => {
+      if (e.pointerType !== "mouse") return;
+      cur.style.transform = `translate3d(${e.clientX - 2}px, ${e.clientY - 2}px, 0)`;
+      cur.classList.add("on");
+      const t = e.target instanceof Element ? e.target : null;
+      const onText = !!(t && t.closest(TEXT));
+      cur.classList.toggle("hide", onText);
+      cur.classList.toggle("hover", !onText && !!(t && t.closest(INTERACTIVE)));
+    }, { passive: true });
+    document.addEventListener("pointerdown", e => {
+      if (e.pointerType !== "mouse") return;
+      cur.classList.add("down");
+      if (reduceMotion.matches) return;
+      const p = el("div", { class: "cur-pulse", "aria-hidden": "true" });
+      p.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      document.body.append(p);
+      setTimeout(() => p.remove(), 700);
+    });
+    document.addEventListener("pointerup", () => cur.classList.remove("down"));
+    document.addEventListener("mouseout", e => { if (!e.relatedTarget) cur.classList.remove("on"); });
+  }
+
+  /* ---------- Sky: slow rain + an occasional soft pink charge (both off for reduced motion) ---------- */
+  const cv = $("#sky");
+  const ctx = cv.getContext && cv.getContext("2d");
+  if (!ctx) return;
+  let w = 0, h = 0, drops = [], bolts = [], raf = null, nextBolt = 0;
+
+  const makeDrop = initial => ({
+    x: Math.random() * w,
+    y: initial ? Math.random() * h : -Math.random() * h * 0.3,
+    len: 10 + Math.random() * 26,
+    v: 0.5 + Math.random() * 1.3,
+    a: 0.04 + Math.random() * 0.12,
+    warm: Math.random() < 0.1
+  });
+
+  function zigzag(x1, y1, x2, y2, disp, pts) {
+    if (disp < 3) { pts.push([x2, y2]); return; }
+    const mx = (x1 + x2) / 2 + (Math.random() - 0.5) * disp;
+    const my = (y1 + y2) / 2 + (Math.random() - 0.5) * disp;
+    zigzag(x1, y1, mx, my, disp / 2, pts);
+    zigzag(mx, my, x2, y2, disp / 2, pts);
+  }
+  function makeBolt(now) {
+    const span = Math.max(w, h);
+    const len = span * (0.32 + Math.random() * 0.3);
+    const x1 = Math.random() * w;
+    const y1 = h * (0.08 + Math.random() * 0.84);
+    const ang = (Math.random() < 0.5 ? 0 : Math.PI) + (Math.random() - 0.5) * 0.8;
+    const x2 = x1 + Math.cos(ang) * len, y2 = y1 + Math.sin(ang) * len;
+    const main = [[x1, y1]];
+    zigzag(x1, y1, x2, y2, len * 0.2, main);
+    const forks = [0.3, 0.6].map(pos => {
+      const at = main[Math.floor(main.length * (pos + Math.random() * 0.12))];
+      const fAng = ang + (Math.random() < 0.5 ? -1 : 1) * (0.4 + Math.random() * 0.5);
+      const fLen = len * (0.18 + Math.random() * 0.2);
+      const pts = [at];
+      zigzag(at[0], at[1], at[0] + Math.cos(fAng) * fLen, at[1] + Math.sin(fAng) * fLen, fLen * 0.25, pts);
+      return pts;
+    });
+    return { main, forks, t0: now };
+  }
+  // Gentle envelope: soft rise, one small flicker, slow fade. Peak stays low so it never strobes.
+  function boltAlpha(t) {
+    if (t < 80) return t / 80;
+    if (t < 150) return 1 - ((t - 80) / 70) * 0.55;
+    if (t < 220) return 0.45 + ((t - 150) / 70) * 0.45;
+    return Math.max(0, 0.9 * (1 - (t - 220) / 900));
+  }
+  const BOLT_LIFE = 1120;
+  function strokePath(pts) {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.stroke();
+  }
+  function drawBolt(b, now) {
+    const a = boltAlpha(now - b.t0) * 0.55;
+    if (a <= 0) return;
+    ctx.save();
+    ctx.lineJoin = "round";
+    ctx.shadowColor = "rgba(255,110,199,0.9)";
+    ctx.shadowBlur = 22;
+    ctx.strokeStyle = `rgba(255,110,199,${a})`;
+    ctx.lineWidth = 2.4; strokePath(b.main);
+    ctx.lineWidth = 1.4; ctx.strokeStyle = `rgba(255,110,199,${a * 0.6})`;
+    b.forks.forEach(strokePath);
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = `rgba(255,228,244,${a * 0.75})`;
+    ctx.lineWidth = 0.9; strokePath(b.main);
+    ctx.restore();
+  }
+
+  function size() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = window.innerWidth; h = window.innerHeight;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    cv.style.width = w + "px"; cv.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drops = Array.from({ length: Math.round(w / 20) }, () => makeDrop(true));
+  }
+  function draw(now) {
+    ctx.clearRect(0, 0, w, h);
+    ctx.lineWidth = 1;
+    for (const d of drops) {
+      ctx.strokeStyle = d.warm ? `rgba(114,208,197,${d.a})` : `rgba(114,208,197,${d.a})`;
+      ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y - d.len); ctx.stroke();
+    }
+    for (const b of bolts) drawBolt(b, now);
+  }
+  function frame(now) {
+    for (const d of drops) { d.y += d.v; if (d.y - d.len > h) Object.assign(d, makeDrop(false)); }
+    if (now >= nextBolt) {
+      bolts.push(makeBolt(now));
+      nextBolt = now + 4000 + Math.random() * 5000;
+    }
+    bolts = bolts.filter(b => now - b.t0 < BOLT_LIFE);
+    draw(now);
+    raf = requestAnimationFrame(frame);
+  }
+  const start = () => {
+    if (raf || reduceMotion.matches || document.hidden) return;
+    nextBolt = Math.max(nextBolt, performance.now() + 1500 + Math.random() * 2000);
+    raf = requestAnimationFrame(frame);
+  };
+  const stop = () => { if (raf) cancelAnimationFrame(raf); raf = null; bolts = []; };
+  size(); draw(performance.now()); start();
+  window.addEventListener("resize", () => { size(); draw(performance.now()); });
+  document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+  const onMotion = () => { if (reduceMotion.matches) { stop(); draw(performance.now()); } else start(); };
+  if (reduceMotion.addEventListener) reduceMotion.addEventListener("change", onMotion);
+})();
+</script>
+</body>
+</html>
