@@ -4,13 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Moutrine William</title>
-<meta name="description" content="Moutrine William: cloud, DevOps and HashiCorp engineering.">
+<meta name="description" content="Moutrine : cloud, DevOps and HashiCorp engineering.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Oxanium:wght@500;600;700&display=swap">
 <style>
-/* Layout: an operator console at night. Sticky top bar, hero split (identity | live terminal),
-   namespaced skills (cards or kubectl table), contact strip. Single dark theme by design. */
+/* Layout */
 :root{
   --ink:#0a0e15;
   --ink-glass:rgba(10,14,21,.8);
@@ -72,7 +71,7 @@ h1,h2,h3{text-wrap:balance}
 .nav a.cta{color:var(--on-accent);background:var(--accent);font-weight:500;margin-left:8px}
 .nav a.cta:hover{background:var(--accent-hi)}
 
-/* Hero */
+/* Namebar */
 .hero{padding-block:clamp(44px,8vw,96px) clamp(44px,7vw,80px)}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(36px,5vw,72px);align-items:center}
 @media (max-width:920px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
@@ -387,13 +386,13 @@ html.cc input[type="text"], html.cc input[type="search"]{cursor:text}
   const slug = s => s.toLowerCase().replace(/\+\+/g, "pp").replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  /* ---------- Stats ---------- */
+  /* Stats */
   const uniqueAll = new Set(GROUPS.flatMap(g => g.items.map(i => i.toLowerCase())));
   $("#stat-clouds").textContent = GROUPS.find(g => g.ns === "cloud").items.length;
   $("#stat-tools").textContent = uniqueAll.size;
   $("#stat-domains").textContent = GROUPS.length;
 
-  /* ---------- Skills ---------- */
+  /* Skills */
   const state = { ns: "all", q: "", view: "cards" };
   const nsRow = $("#ns-row"), cards = $("#cards"), tbody = $("#ktbody");
   const countEl = $("#skill-count"), emptyEl = $("#skills-empty");
@@ -468,7 +467,7 @@ html.cc input[type="text"], html.cc input[type="search"]{cursor:text}
   $("#v-table").addEventListener("click", () => { state.view = "table"; render(); });
   render();
 
-  /* ---------- Terminal ---------- */
+  /* Terminal */
   const out = $("#term-out"), form = $("#term-form"), input = $("#term-input");
   const history = [];
   let hIndex = 0;
@@ -699,7 +698,7 @@ html.cc input[type="text"], html.cc input[type="search"]{cursor:text}
     });
   }
 
-  /* ---------- Copy button ---------- */
+  /* Copy button */
   document.querySelectorAll("[data-copy]").forEach(btn => {
     const label = btn.textContent;
     const reset = () => setTimeout(() => { btn.textContent = label; }, 1800);
@@ -722,7 +721,7 @@ html.cc input[type="text"], html.cc input[type="search"]{cursor:text}
     });
   });
 
-  /* ---------- Custom cursor: pink zigzag arrow (mouse only) ---------- */
+  /* Custom cursor */
   if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
     const NS = "http://www.w3.org/2000/svg";
     const cur = el("div", { class: "cur", "aria-hidden": "true" });
@@ -731,7 +730,7 @@ html.cc input[type="text"], html.cc input[type="search"]{cursor:text}
     svg.setAttribute("focusable", "false");
     const bolt = document.createElementNS(NS, "path");
     bolt.setAttribute("class", "bolt");
-    // Arrowhead with its tip at (2,2), then a lightning-bolt tail instead of a straight stem.
+   
     bolt.setAttribute("d", "M2 2 L2 20 L7 15.5 L9.5 21 L7 22 L13 30.5 L12 23.5 L14.5 22.5 L11 15.5 L17 15.5 Z");
     svg.append(bolt);
     cur.append(svg);
@@ -762,7 +761,7 @@ html.cc input[type="text"], html.cc input[type="search"]{cursor:text}
     document.addEventListener("mouseout", e => { if (!e.relatedTarget) cur.classList.remove("on"); });
   }
 
-  /* ---------- Sky: slow rain + an occasional soft pink charge (both off for reduced motion) ---------- */
+  /* Sky */
   const cv = $("#sky");
   const ctx = cv.getContext && cv.getContext("2d");
   if (!ctx) return;
@@ -803,7 +802,7 @@ html.cc input[type="text"], html.cc input[type="search"]{cursor:text}
     });
     return { main, forks, t0: now };
   }
-  // Gentle envelope: soft rise, one small flicker, slow fade. Peak stays low so it never strobes.
+  
   function boltAlpha(t) {
     if (t < 80) return t / 80;
     if (t < 150) return 1 - ((t - 80) / 70) * 0.55;
