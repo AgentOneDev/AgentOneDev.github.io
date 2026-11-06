@@ -4,15 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Moutrine William</title>
-  <meta name="description" content="Moutrine : cloud, DevOps and HashiCorp engineering.">
+  <meta name="description" content="Moutrine : Software, Cloud & DevOps, Platform Engineering.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Oxanium:wght@500;600;700&display=swap">
 
   <style>
-    /* ==========================================================================
-       Tokens
-       ========================================================================== */
+    /* Tokens */
     :root {
       /* Surfaces */
       --ink: #0a0e15;
@@ -58,9 +56,7 @@
       color-scheme: dark;
     }
 
-    /* ==========================================================================
-       Base
-       ========================================================================== */
+    /* Base */
     *, *::before, *::after { box-sizing: border-box; }
     [hidden] { display: none !important; }
 
@@ -107,9 +103,7 @@
       padding-right: max(16px, env(safe-area-inset-right, 0px));
     }
 
-    /* ==========================================================================
-       Top bar
-       ========================================================================== */
+    /* Top bar */
     .top {
       position: sticky;
       top: var(--safe-top);
@@ -135,9 +129,7 @@
     .nav a.cta { margin-left: 8px; font-weight: 500; color: var(--on-accent); background: var(--accent); }
     .nav a.cta:hover { background: var(--accent-hi); }
 
-    /* ==========================================================================
-       Hero
-       ========================================================================== */
+    /* Namebar */
     .hero { padding-block: clamp(44px, 8vw, 96px) clamp(44px, 7vw, 80px); }
 
     .hero-grid {
@@ -202,9 +194,7 @@
 
     .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
 
-    /* ==========================================================================
-       Buttons
-       ========================================================================== */
+    /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -248,9 +238,7 @@
     .term-chips button:hover,
     .copy:hover { color: var(--accent); border-color: var(--accent); }
 
-    /* ==========================================================================
-       Terminal
-       ========================================================================== */
+    /* Terminal */
     .term {
       position: relative;
       min-width: 0;
@@ -356,7 +344,7 @@
       100% { opacity: 0; }
     }
 
-    /* `neofetch` colour swatch */
+    /* neofetch colour swatch */
     .term-out .l-swatch { display: flex; margin: 6px 0 2px; }
     .l-swatch i { display: block; width: 18px; height: 12px; }
 
@@ -386,9 +374,7 @@
 
     .term-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 16px; }
 
-    /* ==========================================================================
-       Sections
-       ========================================================================== */
+    /* Sections */
     .block { padding-block: clamp(60px, 8vw, 104px); border-top: 1px solid var(--line); }
     section[id] { scroll-margin-top: 72px; }
 
@@ -413,9 +399,7 @@
     .cmd { font-family: var(--f-mono); font-size: .8125rem; color: var(--dim); white-space: nowrap; }
     .cmd::before { content: "$ "; color: var(--accent); }
 
-    /* ==========================================================================
-       Skills
-       ========================================================================== */
+    /* Skills */
     .controls { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
     .ns-row { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -564,9 +548,7 @@
     .ktable .c-ns { color: var(--dim); }
     .st-run { color: var(--accent); }
 
-    /* ==========================================================================
-       Contact
-       ========================================================================== */
+    /* Contact */
     .contact-grid {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
@@ -619,9 +601,7 @@
       color: var(--dim);
     }
 
-    /* ==========================================================================
-       Custom cursor (mouse only; enabled when the script adds html.cc)
-       ========================================================================== */
+    /* Custom cursor (mouse only; enabled when the script adds html.cc) */
     html.cc, html.cc * { cursor: none; }
     html.cc input[type="text"], html.cc input[type="search"] { cursor: text; }
 
@@ -672,9 +652,7 @@
       to { transform: scale(2.6); opacity: 0; }
     }
 
-    /* ==========================================================================
-       Reduced motion
-       ========================================================================== */
+    /* Reduced motion */
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       * { transition: none !important; }
@@ -838,9 +816,7 @@
   (() => {
     "use strict";
 
-    /* ========================================================================
-       Content
-       ======================================================================== */
+    /* Content */
     const PROFILE = {
       tagline: "A software developer",   // shown by `whoami` in neon, followed by an animated "..."
       role: "Software Development · Cloud & DevOps · Platform Engineering",
@@ -865,9 +841,7 @@
       { ns: "practice",      label: "Ways of working",            items: ["Agile / Scrum", "Sprints", "Code reviews", "Technical writing"] }
     ];
 
-    /* ========================================================================
-       Helpers
-       ======================================================================== */
+    /* Helpers */
     const $ = (selector, root = document) => root.querySelector(selector);
 
     /** Creates an element. `class` and `text` are shortcuts; every other key becomes an attribute. */
@@ -898,18 +872,14 @@
     const ALL_SKILLS = new Set(GROUPS.flatMap(group => group.items.map(item => item.toLowerCase())));
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    /* ========================================================================
-       Hero stats
-       ======================================================================== */
+    /* stats */
     function initStats() {
       $("#stat-clouds").textContent = area("cloud").items.length;
       $("#stat-tools").textContent = ALL_SKILLS.size;
       $("#stat-domains").textContent = GROUPS.length;
     }
 
-    /* ========================================================================
-       Skills: area filter, search, cards / kubectl views
-       ======================================================================== */
+    /* Skills: area filter, search, cards / kubectl views */
     function initSkills() {
       const state = { ns: "all", q: "", view: "cards" };
 
@@ -1011,9 +981,7 @@
       render();
     }
 
-    /* ========================================================================
-       Terminal
-       ======================================================================== */
+    /* Terminal */
     function initTerminal() {
       const out = $("#term-out");
       const form = $("#term-form");
@@ -1365,9 +1333,7 @@
         button.addEventListener("click", () => run(button.dataset.run)));
     }
 
-    /* ========================================================================
-       Contact: pigeon ping and copy buttons
-       ======================================================================== */
+    /* Contact: pigeon ping and copy buttons */
     function initContact() {
       const pigeonButton = $("#pigeon-ping");
       const pigeonStatus = $("#pigeon-status");
@@ -1413,9 +1379,7 @@
       });
     }
 
-    /* ========================================================================
-       Custom cursor (precise pointers only)
-       ======================================================================== */
+    /* Custom cursor (precise pointers only) */
     function initCursor() {
       if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
@@ -1463,9 +1427,7 @@
       document.addEventListener("mouseout", e => { if (!e.relatedTarget) cursor.classList.remove("on"); });
     }
 
-    /* ========================================================================
-       Background: rain and occasional lightning
-       ======================================================================== */
+    /* Background */
     function initSky() {
       const canvas = $("#sky");
       const ctx = canvas.getContext && canvas.getContext("2d");
@@ -1641,9 +1603,7 @@
       }
     }
 
-    /* ========================================================================
-       Boot
-       ======================================================================== */
+    /* Boot */
     initStats();
     initSkills();
     initTerminal();
