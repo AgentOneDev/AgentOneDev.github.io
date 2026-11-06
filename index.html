@@ -1,0 +1,1656 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Moutrine William</title>
+  <meta name="description" content="Moutrine : cloud, DevOps and HashiCorp engineering.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Oxanium:wght@500;600;700&display=swap">
+
+  <style>
+    /* ==========================================================================
+       Tokens
+       ========================================================================== */
+    :root {
+      /* Surfaces */
+      --ink: #0a0e15;
+      --ink-glass: rgba(10, 14, 21, .8);
+      --panel: #0f1620;
+      --panel-hi: #151e2b;
+
+      /* Lines */
+      --line: #223040;
+      --line-soft: rgba(34, 48, 64, .55);
+      --line-hi: #30445a;
+
+      /* Text */
+      --text: #dce4ed;
+      --dim: #8d9cb0;
+
+      /* Accent (coolant teal) */
+      --accent: #72d0c5;
+      --accent-hi: #9be3da;
+      --accent-dim: rgba(114, 208, 197, .12);
+      --accent-edge: rgba(114, 208, 197, .45);
+      --on-accent: #062420;
+
+      /* Neon turquoise (whoami line) */
+      --neon: #3ff5e6;
+      --neon-glow: rgba(63, 245, 230, .55);
+
+      /* Charge (cursor + lightning) and errors */
+      --charge: #ff6ec7;
+      --charge-dim: rgba(255, 110, 199, .28);
+      --fault: #e8857f;
+
+      /* Type */
+      --f-display: "Oxanium", "Bahnschrift", "Segoe UI", system-ui, sans-serif;
+      --f-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+      --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+      /* Layout */
+      --radius: 4px;
+      --wrap: 1160px;
+      --safe-top: env(safe-area-inset-top, 0px);
+
+      color-scheme: dark;
+    }
+
+    /* ==========================================================================
+       Base
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    html {
+      padding-top: var(--safe-top);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1100px 520px at 88% -8%, rgba(114, 208, 197, .09), transparent 62%),
+        radial-gradient(900px 460px at -8% 6%, rgba(114, 208, 197, .05), transparent 60%),
+        var(--ink);
+      color: var(--text);
+      font-family: var(--f-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Solid strip under the notch so content doesn't show through while scrolling */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 10;
+      height: var(--safe-top);
+      background: var(--ink);
+    }
+
+    a { color: var(--accent); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    h1, h2, h3 { text-wrap: balance; }
+
+    #sky { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .page { position: relative; z-index: 1; }
+
+    .wrap {
+      max-width: var(--wrap);
+      margin-inline: auto;
+      padding-left: max(16px, env(safe-area-inset-left, 0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+
+    /* ==========================================================================
+       Top bar
+       ========================================================================== */
+    .top {
+      position: sticky;
+      top: var(--safe-top);
+      z-index: 9;
+      background: var(--ink-glass);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .top .wrap { display: flex; align-items: center; justify-content: flex-end; padding-block: 12px; }
+
+    .nav { display: flex; align-items: center; gap: 2px; }
+    .nav a {
+      padding: 8px 10px;
+      font-family: var(--f-mono);
+      font-size: .8125rem;
+      color: var(--dim);
+      text-decoration: none;
+      border-radius: 3px;
+      transition: color .15s, background .15s;
+    }
+    .nav a:hover { color: var(--text); background: var(--panel-hi); }
+    .nav a.cta { margin-left: 8px; font-weight: 500; color: var(--on-accent); background: var(--accent); }
+    .nav a.cta:hover { background: var(--accent-hi); }
+
+    /* ==========================================================================
+       Hero
+       ========================================================================== */
+    .hero { padding-block: clamp(44px, 8vw, 96px) clamp(44px, 7vw, 80px); }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: clamp(36px, 5vw, 72px);
+      align-items: center;
+    }
+    @media (max-width: 920px) {
+      .hero-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .eyebrow {
+      margin: 0 0 20px;
+      font-family: var(--f-mono);
+      font-size: .75rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .name {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: clamp(2.9rem, 8vw, 5.25rem);
+      line-height: .9;
+      letter-spacing: -.01em;
+    }
+    .name .caret {
+      display: inline-block;
+      width: .36em;
+      height: .7em;
+      margin-left: .1em;
+      vertical-align: -.02em;
+      background: var(--accent);
+      box-shadow: 0 0 22px var(--accent-edge);
+      animation: caret 1.4s ease-in-out infinite;
+    }
+    @keyframes caret {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .15; }
+    }
+
+    .signal {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 22px;
+      margin: 30px 0 0;
+      padding: 0;
+      list-style: none;
+      font-family: var(--f-mono);
+      font-size: .8125rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--dim);
+    }
+    .signal li { display: inline-flex; align-items: center; gap: 8px; }
+    .signal li::before { content: ""; display: inline-block; width: 5px; height: 5px; background: var(--accent); }
+    .signal b { font-weight: 500; color: var(--text); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+
+    /* ==========================================================================
+       Buttons
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      font-family: var(--f-mono);
+      font-size: .8125rem;
+      font-weight: 500;
+      text-decoration: none;
+      background: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background .2s, border-color .2s, color .2s;
+    }
+
+    .btn-primary {
+      color: var(--on-accent);
+      background: var(--accent);
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+    .btn-primary:hover { background: var(--accent-hi); }
+    .btn-primary:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--on-accent); }
+
+    .btn-ghost { color: var(--text); border-color: var(--line-hi); border-radius: 3px; }
+    .btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* Small mono buttons: terminal chips, Copy, Ping */
+    .term-chips button,
+    .copy {
+      padding: 5px 9px;
+      font-family: var(--f-mono);
+      font-size: .71875rem;
+      color: var(--dim);
+      background: var(--panel-hi);
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+    }
+    .copy { padding: 6px 10px; }
+    .term-chips button:hover,
+    .copy:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ==========================================================================
+       Terminal
+       ========================================================================== */
+    .term {
+      position: relative;
+      min-width: 0;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 40px 90px -50px rgba(0, 0, 0, .9);
+      transition: border-color .2s;
+    }
+    .term:focus-within { border-color: var(--line-hi); }
+
+    /* Corner brackets */
+    .term::before,
+    .term::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 0 solid var(--accent);
+      pointer-events: none;
+    }
+    .term::before { top: -7px; left: -7px; border-width: 1px 0 0 1px; }
+    .term::after { bottom: -7px; right: -7px; border-width: 0 1px 1px 0; }
+
+    .term-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--f-mono);
+      font-size: .75rem;
+      color: var(--dim);
+    }
+    .term-bar span { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+
+    .led {
+      flex: none;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .term-out {
+      height: 300px;
+      overflow-y: auto;
+      padding: 14px 16px 6px;
+      font-family: var(--f-mono);
+      font-size: .8125rem;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+    .term-out > div { white-space: pre-wrap; }
+    .term-out .l-pre { padding-bottom: 2px; overflow-x: auto; white-space: pre; color: var(--text); }
+
+    /* Output line styles */
+    .l-cmd { color: var(--text); }
+    .l-cmd .p { color: var(--accent); }
+    .l-out { color: var(--text); opacity: .86; }
+    .l-hi, .l-ok, .l-key { color: var(--accent); }
+    .l-dim { color: var(--dim); }
+    .l-err { color: var(--fault); }
+    .l-neon { color: var(--neon); text-shadow: 0 0 6px var(--neon-glow), 0 0 14px var(--neon-glow); }
+
+    /* `help` listing */
+    .term-out .l-help {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      gap: 2px 16px;
+      margin: 2px 0 4px;
+      white-space: normal;
+    }
+    .l-help span { color: var(--dim); }
+    .l-help .hcmd {
+      padding: 0;
+      font: inherit;
+      text-align: left;
+      color: var(--accent);
+      background: none;
+      border: 0;
+      cursor: pointer;
+      text-decoration: underline dotted;
+      text-decoration-color: transparent;
+      text-underline-offset: 3px;
+      transition: text-decoration-color .15s;
+    }
+    .l-help .hcmd:hover { text-decoration-color: var(--accent); }
+
+    /* Animated ellipsis (whoami output and help): three dots fade in one after another, then out */
+    .dots i {
+      margin-left: .3em;
+      font-style: normal;
+      animation: dot 1.8s ease-in-out infinite both;
+    }
+    .dots i:nth-child(2) { animation-delay: .3s; }
+    .dots i:nth-child(3) { animation-delay: .6s; }
+    @keyframes dot {
+      0%, 20% { opacity: 0; }
+      40%, 80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* `neofetch` colour swatch */
+    .term-out .l-swatch { display: flex; margin: 6px 0 2px; }
+    .l-swatch i { display: block; width: 18px; height: 12px; }
+
+    /* Prompt */
+    .term-in {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px 12px;
+      border-top: 1px solid var(--line-soft);
+      font-family: var(--f-mono);
+      font-size: .875rem;
+    }
+    .term-in label { flex: none; color: var(--accent); }
+    .term-in input {
+      flex: 1;
+      min-width: 0;
+      padding: 4px 0;
+      font: inherit;
+      color: var(--text);
+      caret-color: var(--accent);
+      background: transparent;
+      border: 0;
+    }
+    .term-in input:focus { outline: none; }
+    .term-in input::placeholder { color: var(--dim); opacity: .7; }
+
+    .term-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 16px; }
+
+    /* ==========================================================================
+       Sections
+       ========================================================================== */
+    .block { padding-block: clamp(60px, 8vw, 104px); border-top: 1px solid var(--line); }
+    section[id] { scroll-margin-top: 72px; }
+
+    .sec-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px 24px;
+      margin-bottom: 30px;
+    }
+    .sec-head h2,
+    .contact-grid h2 {
+      margin: 0;
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: clamp(1.85rem, 3.8vw, 2.5rem);
+      line-height: 1.05;
+    }
+    .sec-head p { max-width: 60ch; margin: 8px 0 0; color: var(--dim); }
+
+    .cmd { font-family: var(--f-mono); font-size: .8125rem; color: var(--dim); white-space: nowrap; }
+    .cmd::before { content: "$ "; color: var(--accent); }
+
+    /* ==========================================================================
+       Skills
+       ========================================================================== */
+    .controls { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+    .ns-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .ns {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      font-family: var(--f-mono);
+      font-size: .75rem;
+      color: var(--dim);
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      cursor: pointer;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .ns:hover { color: var(--text); border-color: var(--line-hi); }
+    .ns .n { color: var(--text); opacity: .55; font-variant-numeric: tabular-nums; }
+    .ns[aria-pressed="true"] { color: var(--accent); background: var(--accent-dim); border-color: var(--accent-edge); }
+    .ns[aria-pressed="true"] .n { color: var(--accent); opacity: .8; }
+
+    .tool-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+
+    .search {
+      display: flex;
+      flex: 1 1 260px;
+      align-items: center;
+      gap: 10px;
+      max-width: 420px;
+      padding: 0 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      transition: border-color .15s;
+    }
+    .search:focus-within { border-color: var(--accent); }
+    .search span { font-family: var(--f-mono); font-size: .8125rem; color: var(--accent); }
+    .search input {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 0;
+      font: inherit;
+      font-size: .9375rem;
+      color: var(--text);
+      background: transparent;
+      border: 0;
+    }
+    .search input:focus { outline: none; }
+    .search input::placeholder { color: var(--dim); }
+
+    .tool-right { display: flex; align-items: center; gap: 14px; }
+    .count { font-family: var(--f-mono); font-size: .75rem; font-variant-numeric: tabular-nums; color: var(--dim); }
+
+    .seg { display: inline-flex; overflow: hidden; border: 1px solid var(--line); border-radius: 3px; }
+    .seg button {
+      padding: 8px 12px;
+      font-family: var(--f-mono);
+      font-size: .75rem;
+      color: var(--dim);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+    .seg button + button { border-left: 1px solid var(--line); }
+    .seg button[aria-pressed="true"] { color: var(--text); background: var(--panel-hi); }
+
+    /* Cards view */
+    .cards { columns: 3 300px; column-gap: 16px; }
+    .card {
+      display: inline-block;
+      width: 100%;
+      margin: 0 0 16px;
+      padding: 18px 18px 20px;
+      break-inside: avoid;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      transition: border-color .2s;
+    }
+    .card:hover { border-color: var(--line-hi); }
+    .card-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--f-mono);
+      font-size: .71875rem;
+      color: var(--dim);
+    }
+    .phase { display: inline-flex; align-items: center; gap: 6px; }
+    .phase i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    .card h3 {
+      margin: 10px 0 0;
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: 1.25rem;
+      letter-spacing: .005em;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
+    .chips li {
+      padding: 5px 10px;
+      font-size: .875rem;
+      line-height: 1.4;
+      background: var(--panel-hi);
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      transition: border-color .15s, box-shadow .2s;
+    }
+    .chips li:hover { border-color: var(--accent); box-shadow: 0 0 18px -8px var(--accent); }
+
+    mark { font-weight: 600; color: var(--accent); background: transparent; }
+
+    .empty-q {
+      padding: 28px;
+      font-family: var(--f-mono);
+      font-size: .875rem;
+      color: var(--dim);
+      border: 1px dashed var(--line-hi);
+      border-radius: var(--radius);
+    }
+
+    /* kubectl view */
+    .ktable-wrap {
+      max-height: 540px;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .ktable { width: 100%; border-collapse: collapse; font-family: var(--f-mono); font-size: .8125rem; white-space: nowrap; }
+    .ktable th {
+      position: sticky;
+      top: 0;
+      padding: 10px 18px;
+      text-align: left;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--dim);
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+    .ktable td { padding: 7px 18px; border-bottom: 1px solid var(--line-soft); }
+    .ktable tr:hover td { background: var(--panel-hi); }
+    .ktable .c-ns { color: var(--dim); }
+    .st-run { color: var(--accent); }
+
+    /* ==========================================================================
+       Contact
+       ========================================================================== */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      gap: clamp(20px, 5vw, 64px);
+      align-items: center;
+    }
+    @media (max-width: 860px) {
+      .contact-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .c-list { display: grid; gap: 10px; min-width: 0; }
+    .c-row {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .c-row .k {
+      font-family: var(--f-mono);
+      font-size: .71875rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .c-row .v { font-family: var(--f-mono); font-size: .875rem; overflow-wrap: anywhere; }
+    .c-row .v a { color: var(--text); text-decoration-color: var(--accent); text-underline-offset: 3px; }
+    .c-row .v a:hover { color: var(--accent); }
+    .c-row .v small { display: block; margin-top: 4px; font-size: .75rem; color: var(--dim); }
+    @media (max-width: 520px) {
+      .c-row { grid-template-columns: minmax(0, 1fr) auto; }
+      .c-row .k { grid-column: 1 / -1; }
+    }
+
+    /* ==========================================================================
+       Footer
+       ========================================================================== */
+    footer { border-top: 1px solid var(--line); }
+    footer .wrap {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px 24px;
+      padding-block: 24px;
+      font-family: var(--f-mono);
+      font-size: .75rem;
+      color: var(--dim);
+    }
+
+    /* ==========================================================================
+       Custom cursor (mouse only; enabled when the script adds html.cc)
+       ========================================================================== */
+    html.cc, html.cc * { cursor: none; }
+    html.cc input[type="text"], html.cc input[type="search"] { cursor: text; }
+
+    .cur {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s;
+      will-change: transform;
+    }
+    .cur.on { opacity: 1; }
+    .cur.hide { opacity: 0; }
+
+    .cur svg {
+      display: block;
+      width: 28px;
+      height: 32px;
+      overflow: visible;
+      transform-origin: 2px 2px;
+      transition: transform .2s ease;
+      filter: drop-shadow(0 0 4px var(--charge-dim));
+    }
+    .cur .bolt { fill: var(--charge); stroke: var(--ink); stroke-width: 1.2; stroke-linejoin: round; }
+    .cur.hover svg { transform: scale(1.15) rotate(-8deg); animation: charge 1.6s ease-in-out infinite; }
+    .cur.down svg { transform: scale(.88); }
+    .cur.hover.down svg { transform: scale(1) rotate(-8deg); }
+    @keyframes charge {
+      0%, 100% { filter: drop-shadow(0 0 4px var(--charge-dim)); }
+      50% { filter: drop-shadow(0 0 10px var(--charge)); }
+    }
+
+    /* Click ripple */
+    .cur-pulse { position: fixed; left: 0; top: 0; z-index: 99; width: 0; height: 0; pointer-events: none; }
+    .cur-pulse::before {
+      content: "";
+      position: absolute;
+      inset: -14px;
+      border: 1px solid var(--charge);
+      border-radius: 50%;
+      box-shadow: 0 0 14px var(--charge-dim);
+      animation: pulse .6s ease-out forwards;
+    }
+    @keyframes pulse {
+      from { transform: scale(.6); opacity: .9; }
+      to { transform: scale(2.6); opacity: 0; }
+    }
+
+    /* ==========================================================================
+       Reduced motion
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+      .name .caret,
+      .cur.hover svg,
+      .dots i { animation: none; }
+      .cur-pulse { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="sky" aria-hidden="true"></canvas>
+
+  <div class="page">
+    <header class="top">
+      <div class="wrap">
+        <nav class="nav" aria-label="Sections">
+          <a href="#skills">Skills</a>
+          <a class="cta" href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero -->
+      <section class="hero" aria-labelledby="hero-name">
+        <div class="wrap hero-grid">
+          <div>
+            <p class="eyebrow">Software Development · Cloud &amp; DevOps · Platform Engineering</p>
+            <h1 class="name" id="hero-name">
+              <span>Moutrine<span class="caret" aria-hidden="true"></span></span>
+            </h1>
+
+            <!-- Numbers are recomputed from GROUPS by the script; these are the no-JS fallback -->
+            <ul class="signal" aria-label="At a glance">
+              <li><span><b id="stat-clouds">5</b> cloud platforms</span></li>
+              <li><span><b id="stat-tools">68</b> tools &amp; practices</span></li>
+              <li><span><b id="stat-domains">13</b> skill areas</span></li>
+            </ul>
+
+            <div class="actions">
+              <a class="btn btn-primary" href="#skills">Explore skills</a>
+              <a class="btn btn-ghost" href="https://www.linkedin.com/in/moutrine-william" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+            </div>
+          </div>
+
+          <!-- Terminal -->
+          <div class="term" id="terminal">
+            <div class="term-bar">
+              <span><i class="led" aria-hidden="true"></i>moutrine@yourservice.literally</span>
+            </div>
+
+            <div class="term-out" id="term-out" role="log" aria-live="polite" aria-label="Terminal output">
+              <div class="l-cmd"><span class="p" aria-hidden="true">❯ </span>whoami</div>
+              <div class="l-neon">A software developer<span class="dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></div>
+              <div class="l-cmd"><span class="p" aria-hidden="true">❯ </span>ls skills</div>
+              <div class="l-ok">cloud/  containers/  hashicorp/  iac/  cicd/  data/  observability/  languages/  systems/  networking/  security/  ai/  practice/</div>
+              <div class="l-dim">Type help, or tap a command below.</div>
+            </div>
+
+            <form class="term-in" id="term-form" autocomplete="off">
+              <label for="term-input" aria-label="Command">❯</label>
+              <input id="term-input" type="text" spellcheck="false" autocapitalize="off" placeholder="type a command, e.g. help" enterkeyhint="send">
+            </form>
+
+            <div class="term-chips" aria-label="Suggested commands">
+              <button type="button" data-run="help">help</button>
+              <button type="button" data-run="neofetch">neofetch</button>
+              <button type="button" data-run="ls skills">ls skills</button>
+              <button type="button" data-run="docker ps">docker ps</button>
+              <button type="button" data-run="ping moutrine">ping moutrine</button>
+              <button type="button" data-run="contact">contact</button>
+              <button type="button" data-run="sudo hire">sudo hire</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Skills -->
+      <section class="block" id="skills" aria-labelledby="skills-h">
+        <div class="wrap">
+          <div class="sec-head">
+            <div>
+              <h2 id="skills-h">Skills</h2>
+              <p>Grouped the way a cluster groups workloads. Pick an area, search for a tool, or switch to the kubectl view.</p>
+            </div>
+            <span class="cmd">kubectl get skills -A</span>
+          </div>
+
+          <div class="controls">
+            <div class="ns-row" id="ns-row" role="group" aria-label="Skill areas"></div>
+            <div class="tool-row">
+              <label class="search" for="skill-q">
+                <span aria-hidden="true">/</span>
+                <input id="skill-q" type="search" placeholder="Filter skills, e.g. vault or sql" autocomplete="off" spellcheck="false">
+              </label>
+              <div class="tool-right">
+                <span class="count" id="skill-count" aria-live="polite"></span>
+                <div class="seg" role="group" aria-label="View">
+                  <button type="button" id="v-cards" aria-pressed="true">Cards</button>
+                  <button type="button" id="v-table" aria-pressed="false">kubectl</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-cards">
+            <div class="cards" id="cards"></div>
+          </div>
+
+          <div id="view-table" hidden>
+            <div class="ktable-wrap">
+              <table class="ktable">
+                <thead>
+                  <tr>
+                    <th scope="col">NAMESPACE</th>
+                    <th scope="col">NAME</th>
+                    <th scope="col">READY</th>
+                    <th scope="col">STATUS</th>
+                  </tr>
+                </thead>
+                <tbody id="ktbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="empty-q" id="skills-empty" hidden></p>
+        </div>
+      </section>
+
+      <!-- Contact -->
+      <section class="block" id="contact" aria-labelledby="contact-h">
+        <div class="wrap contact-grid">
+          <h2 id="contact-h">Contact</h2>
+          <div class="c-list">
+            <div class="c-row">
+              <span class="k">LinkedIn</span>
+              <span class="v" id="c-li"><a href="https://www.linkedin.com/in/moutrine-william" target="_blank" rel="noopener noreferrer">linkedin.com/in/moutrine-william</a></span>
+              <button type="button" class="copy" data-copy="https://www.linkedin.com/in/moutrine-william" data-target="c-li">Copy</button>
+            </div>
+            <div class="c-row">
+              <span class="k">Pigeon</span>
+              <span class="v">IP over Avian Carriers, <a href="https://www.rfc-editor.org/info/rfc1149/" target="_blank" rel="noopener noreferrer">RFC 1149</a><small id="pigeon-status" aria-live="polite">Latency: hours to days. Packet loss: likely.</small></span>
+              <button type="button" class="copy" id="pigeon-ping">Ping</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <span>© 2026 Moutrine William</span>
+        <span>One static HTML page · no cookies · no trackers · fonts from Google Fonts</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    /* ========================================================================
+       Content
+       ======================================================================== */
+    const PROFILE = {
+      tagline: "A software developer",   // shown by `whoami` in neon, followed by an animated "..."
+      role: "Software Development · Cloud & DevOps · Platform Engineering",
+      linkedin: "https://www.linkedin.com/in/moutrine-william"
+    };
+
+    const RFC1149 = "https://www.rfc-editor.org/info/rfc1149/";
+
+    const GROUPS = [
+      { ns: "cloud",         label: "Cloud platforms",            items: ["AWS", "Azure", "Google Cloud", "Oracle Cloud", "IBM Cloud"] },
+      { ns: "containers",    label: "Containers & orchestration", items: ["Docker", "Podman", "Kubernetes"] },
+      { ns: "hashicorp",     label: "HashiCorp",                  items: ["Terraform", "Vault", "Boundary"] },
+      { ns: "iac",           label: "Infrastructure & config",    items: ["Bash", "Linux configuration"] },
+      { ns: "cicd",          label: "CI/CD",                      items: ["GitHub Actions", "GitLab CI", "Jira"] },
+      { ns: "data",          label: "Storage & databases",        items: ["MinIO", "PostgreSQL", "MySQL", "Oracle Database", "MongoDB", "Redis", "Caching", "File systems & file representation"] },
+      { ns: "observability", label: "Observability",              items: ["Prometheus", "Grafana", "Nagios"] },
+      { ns: "languages",     label: "Languages",                  items: ["Go", "Python", "Bash", "JavaScript / TypeScript", "Java", "SQL", "C / C++", "HTML", "CSS"] },
+      { ns: "systems",       label: "Linux systems",              items: ["RHEL", "Fedora", "Ubuntu", "Oracle Linux"] },
+      { ns: "networking",    label: "Networking",                 items: ["TCP/IP", "OSI model", "Subnetting / CIDR", "IPv4", "IPv6", "DNS", "DHCP", "NTP", "HTTP / HTTPS", "TLS / SSL", "Certificates / PKI", "VLANs", "VCN", "NAT", "Nginx", "HAProxy", "IPsec", "SSH", "SSH tunneling", "Wireshark", "traceroute"] },
+      { ns: "security",      label: "Security",                   items: ["IAM", "Secrets management"] },
+      { ns: "ai",            label: "AI & machine learning",      items: ["AI & prompt engineering", "Machine learning algorithms"] },
+      { ns: "practice",      label: "Ways of working",            items: ["Agile / Scrum", "Sprints", "Code reviews", "Technical writing"] }
+    ];
+
+    /* ========================================================================
+       Helpers
+       ======================================================================== */
+    const $ = (selector, root = document) => root.querySelector(selector);
+
+    /** Creates an element. `class` and `text` are shortcuts; every other key becomes an attribute. */
+    const el = (tag, attrs = {}, ...children) => {
+      const node = document.createElement(tag);
+      for (const [key, value] of Object.entries(attrs)) {
+        if (value == null || value === false) continue;
+        if (key === "class") node.className = value;
+        else if (key === "text") node.textContent = value;
+        else node.setAttribute(key, value === true ? "" : String(value));
+      }
+      for (const child of children) if (child != null) node.append(child);
+      return node;
+    };
+
+    /** "C / C++" → "c-cpp", "AI & prompt engineering" → "ai-and-prompt-engineering" */
+    const slug = text => text
+      .toLowerCase()
+      .replace(/\+\+/g, "pp")
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    /** plural(1, "skill") → "1 skill", plural(3, "match", "es") → "3 matches" */
+    const plural = (n, word, suffix = "s") => `${n} ${word}${n === 1 ? "" : suffix}`;
+
+    const area = ns => GROUPS.find(group => group.ns === ns);
+    const ALL_SKILLS = new Set(GROUPS.flatMap(group => group.items.map(item => item.toLowerCase())));
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    /* ========================================================================
+       Hero stats
+       ======================================================================== */
+    function initStats() {
+      $("#stat-clouds").textContent = area("cloud").items.length;
+      $("#stat-tools").textContent = ALL_SKILLS.size;
+      $("#stat-domains").textContent = GROUPS.length;
+    }
+
+    /* ========================================================================
+       Skills: area filter, search, cards / kubectl views
+       ======================================================================== */
+    function initSkills() {
+      const state = { ns: "all", q: "", view: "cards" };
+
+      const nsRow = $("#ns-row");
+      const cards = $("#cards");
+      const tbody = $("#ktbody");
+      const countEl = $("#skill-count");
+      const emptyEl = $("#skills-empty");
+      const search = $("#skill-q");
+      const views = { cards: $("#view-cards"), table: $("#view-table") };
+      const viewButtons = { cards: $("#v-cards"), table: $("#v-table") };
+
+      const nsButton = (id, count) => {
+        const button = el("button", { type: "button", class: "ns", "data-ns": id, "aria-pressed": "false" },
+          id, el("span", { class: "n", text: String(count) }));
+        button.addEventListener("click", () => { state.ns = id; render(); });
+        return button;
+      };
+
+      // Plain substring match, plus a punctuation-tolerant one ("c++" finds "C / C++").
+      const matches = (item, q) => {
+        if (!q) return true;
+        const qSlug = slug(q);
+        return item.toLowerCase().includes(q) || (qSlug !== "" && slug(item).includes(qSlug));
+      };
+
+      // Wraps the first match of q in <mark>.
+      const highlight = (text, q) => {
+        const i = q ? text.toLowerCase().indexOf(q) : -1;
+        if (i < 0) return text;
+        const fragment = document.createDocumentFragment();
+        fragment.append(text.slice(0, i), el("mark", { text: text.slice(i, i + q.length) }), text.slice(i + q.length));
+        return fragment;
+      };
+
+      const card = (group, items, q) => el("article", { class: "card" },
+        el("header", { class: "card-h" },
+          el("span", { text: `ns/${group.ns}` }),
+          el("span", { class: "phase" }, el("i", { "aria-hidden": "true" }), plural(group.items.length, "skill"))),
+        el("h3", { text: group.label }),
+        el("ul", { class: "chips" }, ...items.map(item => el("li", {}, highlight(item, q)))));
+
+      const row = (group, item, q) => el("tr", {},
+        el("td", { class: "c-ns", text: group.ns }),
+        el("td", {}, highlight(slug(item), q && slug(q))),
+        el("td", { text: "1/1" }),
+        el("td", { class: "st-run", text: "Running" }));
+
+      function render() {
+        const q = state.q.trim().toLowerCase();
+        const groups = state.ns === "all" ? GROUPS : GROUPS.filter(group => group.ns === state.ns);
+        const shown = new Set();
+
+        nsRow.querySelectorAll(".ns").forEach(button =>
+          button.setAttribute("aria-pressed", String(button.dataset.ns === state.ns)));
+        cards.replaceChildren();
+        tbody.replaceChildren();
+
+        for (const group of groups) {
+          const items = group.items.filter(item => matches(item, q));
+          if (!items.length) continue;
+          cards.append(card(group, items, q));
+          for (const item of items) {
+            shown.add(item.toLowerCase());
+            tbody.append(row(group, item, q));
+          }
+        }
+
+        const n = shown.size;
+        const empty = n === 0;
+        countEl.textContent = q ? plural(n, "match", "es") : plural(n, "skill");
+
+        emptyEl.hidden = !empty;
+        if (empty) {
+          const scope = state.ns === "all" ? "" : ` in ${state.ns}`;
+          emptyEl.textContent = `No skill matches “${state.q.trim()}”${scope}. Try a tool name like terraform, or pick “all”.`;
+        }
+
+        for (const view of ["cards", "table"]) {
+          views[view].hidden = empty || state.view !== view;
+          viewButtons[view].setAttribute("aria-pressed", String(state.view === view));
+        }
+      }
+
+      nsRow.append(nsButton("all", ALL_SKILLS.size), ...GROUPS.map(group => nsButton(group.ns, group.items.length)));
+
+      search.addEventListener("input", () => { state.q = search.value; render(); });
+      search.addEventListener("keydown", e => {
+        if (e.key !== "Escape") return;
+        search.value = "";
+        state.q = "";
+        render();
+      });
+
+      for (const view of ["cards", "table"]) {
+        viewButtons[view].addEventListener("click", () => { state.view = view; render(); });
+      }
+
+      render();
+    }
+
+    /* ========================================================================
+       Terminal
+       ======================================================================== */
+    function initTerminal() {
+      const out = $("#term-out");
+      const form = $("#term-form");
+      const input = $("#term-input");
+      const history = [];
+      let historyIndex = 0;
+
+      /* ---- Output primitives ---- */
+      const write = (cls, ...parts) => out.append(el("div", { class: cls }, ...parts));
+      const line = (text, cls = "l-out") => write(cls, text || " ");   // non-breaking space keeps blank lines from collapsing
+      const echo = cmd => write("l-cmd", el("span", { class: "p", "aria-hidden": "true", text: "❯ " }), cmd);
+      const link = (label, href) => el("a", { href, target: "_blank", rel: "noopener noreferrer", text: label });
+
+      // Fixed-width table: every column but the last is padded to its widest cell + 3.
+      const table = rows => {
+        const widths = rows[0].map((_, col) => Math.max(...rows.map(r => r[col].length)));
+        const text = rows
+          .map(r => r.map((cell, col) => (col === r.length - 1 ? cell : cell.padEnd(widths[col] + 3))).join(""))
+          .join("\n");
+        write("l-pre", text);
+      };
+
+      // "A software developer..." → the text, then three dots animated by `.dots` in the CSS.
+      const ellipsis = () => el("span", { class: "dots", "aria-hidden": "true" },
+        el("i", { text: "." }), el("i", { text: "." }), el("i", { text: "." }));
+      const describe = text => text.endsWith("...")
+        ? el("span", {}, text.slice(0, -3), ellipsis())
+        : el("span", { text });
+
+      /* ---- Timing & scrolling ---- */
+      const toEnd = () => { out.scrollTop = out.scrollHeight; };
+      // Delayed output for "live" commands; immediate when reduced motion is on.
+      const later = (ms, fn) => setTimeout(() => { fn(); toEnd(); }, reduceMotion.matches ? 0 : ms);
+      const scrollToSection = id =>
+        document.getElementById(id).scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth" });
+
+      /* ---- Lookups ---- */
+      // Accepts "skills/cloud", "cloud/", or a label fragment such as "storage".
+      const findArea = path => {
+        const q = slug(String(path).replace(/^skills\//, "").replace(/\/$/, ""));
+        if (!q) return null;
+        return area(q) || GROUPS.find(group => slug(group.label).includes(q));
+      };
+      const skillList = ns => area(ns).items.join(", ");
+      const isMe = host => host === "moutrine" || host === "moutrine-william";
+
+      // Stable fake container ID: 32-bit FNV-1a hash of the name, stretched to 12 hex chars.
+      const containerId = name => {
+        let h = 2166136261;
+        for (const ch of name) {
+          h ^= ch.charCodeAt(0);
+          h = Math.imul(h, 16777619) >>> 0;
+        }
+        const hex = n => n.toString(16).padStart(8, "0");
+        return (hex(h) + hex((h ^ 0x5bd1e995) >>> 0)).slice(0, 12);
+      };
+
+      const pingPigeon = host => {
+        line(`PING ${host} (IP over Avian Carriers, RFC 1149): 56 data bytes`);
+        for (let seq = 0; seq < 3; seq++) {
+          later(700 * (seq + 1), () => line(`Request timeout for icmp_seq ${seq}`, "l-dim"));
+        }
+        later(2800, () => {
+          line(`--- ${host} ping statistics ---`);
+          line("3 packets transmitted, 0 packets received, 100.0% packet loss");
+          line("The pigeon is on a lunch break. LinkedIn is faster.", "l-hi");
+        });
+      };
+
+      /* ---- Commands ---- */
+      // [command, description]; a description ending in "..." gets the animated ellipsis.
+      const HELP = [
+        ["whoami", "A software developer..."],
+        ["neofetch", "The whole stack at a glance"],
+        ["ls skills", "List skill areas"],
+        ["cat skills/cloud", "One area's skills (any area works)"],
+        ["docker ps", "Skill areas as running containers (podman ps works too)"],
+        ["kubectl get pods -A", "Every skill as a pod"],
+        ["git status", "State of the career repo"],
+        ["ping moutrine", "Check that I'm reachable"],
+        ["ping pigeon", "Test the RFC 1149 contact method"],
+        ["traceroute moutrine", "How a message reaches me"],
+        ["contact", "Where to reach me"],
+        ["sudo hire", "Scroll to the contact section"],
+        ["clear", "Clear this terminal"]
+      ];
+
+      const COMMANDS = {
+        help() {
+          line("Tap a command, or type it.", "l-dim");
+          out.append(el("div", { class: "l-help" },
+            ...HELP.flatMap(([cmd, desc]) => [
+              el("button", { type: "button", class: "hcmd", "data-cmd": cmd, text: cmd }),
+              describe(desc)
+            ])));
+        },
+
+        whoami() {
+          write("l-neon", PROFILE.tagline, ellipsis());
+        },
+
+        neofetch() {
+          line("visitor@moutrine-william", "l-hi");
+          line("------------------------", "l-dim");
+          const specs = [
+            ["Role", PROFILE.role],
+            ["OS", `Linux (${skillList("systems")})`],
+            ["Shell", "bash"],
+            ["Clouds", skillList("cloud")],
+            ["Containers", skillList("containers")],
+            ["HashiCorp", skillList("hashicorp")],
+            ["CI/CD", skillList("cicd")],
+            ["Languages", skillList("languages")],
+            ["Data", skillList("data")],
+            ["Monitoring", skillList("observability")],
+            ["Network", `${area("networking").items.length} protocols & tools`],
+            ["Skills", `${ALL_SKILLS.size} across ${GROUPS.length} areas`],
+            ["Uptime", "always learning"]
+          ];
+          for (const [key, value] of specs) {
+            write("l-out", el("span", { class: "l-key", text: `${key}: ` }), value);
+          }
+          const palette = ["--ink", "--panel-hi", "--line-hi", "--dim", "--text", "--accent", "--charge", "--fault"];
+          out.append(el("div", { class: "l-swatch", "aria-hidden": "true" },
+            ...palette.map(token => el("i", { style: `background:var(${token})` }))));
+        },
+
+        ls([path = ""]) {
+          const p = path.replace(/\/$/, "");
+          if (!p || p === "." || p === "~") {
+            line("skills/", "l-ok");
+            return;
+          }
+          if (p === "skills") {
+            line(GROUPS.map(group => `${group.ns}/`).join("  "), "l-ok");
+            line("Try: cat skills/networking", "l-dim");
+            return;
+          }
+          const group = findArea(p);
+          if (group) line(group.items.map(slug).join("  "));
+          else line(`ls: ${p}: No such file or directory`, "l-err");
+        },
+
+        cat([path = ""]) {
+          const p = path.replace(/\/$/, "");
+          if (!p) {
+            line("usage: cat skills/<area>   e.g. cat skills/cloud", "l-err");
+            return;
+          }
+          if (p === "skills") {
+            line("cat: skills: Is a directory", "l-err");
+            return;
+          }
+          const group = findArea(p);
+          if (!group) {
+            line(`cat: ${p}: No such file or directory`, "l-err");
+            return;
+          }
+          line(`# ${group.label}`, "l-hi");
+          line(group.items.join(" · "));
+        },
+
+        skills([name]) {
+          if (name) COMMANDS.cat([`skills/${name}`]);
+          else COMMANDS.ls(["skills"]);
+        },
+
+        docker([sub = ""]) {
+          if (sub.toLowerCase() !== "ps") {
+            line("usage: docker ps", "l-err");
+            return;
+          }
+          table([
+            ["CONTAINER ID", "IMAGE", "STATUS", "NAMES"],
+            ...GROUPS.map(group => [containerId(group.ns), `skills/${group.ns}:${group.items.length}`, "Up (healthy)", group.ns])
+          ]);
+        },
+
+        kubectl([verb, resource, ...flags]) {
+          if (verb !== "get" || !resource) {
+            line("usage: kubectl get pods -n <area> | kubectl get pods -A | kubectl get ns", "l-err");
+            return;
+          }
+          if (["ns", "namespace", "namespaces"].includes(resource)) {
+            table([["NAME", "STATUS"], ...GROUPS.map(group => [group.ns, "Active"])]);
+            return;
+          }
+          if (!["pods", "pod", "po", "skills"].includes(resource)) {
+            line(`error: the server doesn't have a resource type "${resource}"`, "l-err");
+            return;
+          }
+
+          let ns = null;
+          let all = false;
+          for (let i = 0; i < flags.length; i++) {
+            const flag = flags[i];
+            if (flag === "-n" || flag === "--namespace") ns = (flags[++i] || "").toLowerCase();
+            else if (flag.startsWith("--namespace=")) ns = flag.slice("--namespace=".length).toLowerCase();
+            else if (flag === "-A" || flag === "--all-namespaces") all = true;
+          }
+
+          if (!all && !ns) {
+            line("No resources found in default namespace.", "l-dim");
+            line("Try: kubectl get pods -A  or  kubectl get pods -n cloud", "l-dim");
+            return;
+          }
+          const groups = all ? GROUPS : GROUPS.filter(group => group.ns === ns);
+          if (!groups.length) {
+            line(`No resources found in ${ns} namespace.`, "l-dim");
+            return;
+          }
+
+          const header = all ? ["NAMESPACE", "NAME", "READY", "STATUS"] : ["NAME", "READY", "STATUS"];
+          const rows = groups.flatMap(group => group.items.map(item => {
+            const pod = [slug(item), "1/1", "Running"];
+            return all ? [group.ns, ...pod] : pod;
+          }));
+          table([header, ...rows]);
+        },
+
+        git([sub = ""]) {
+          if (sub.toLowerCase() !== "status") {
+            line("usage: git status", "l-err");
+            return;
+          }
+          line("On branch main");
+          line(`Your branch is ahead of 'origin/main' by ${ALL_SKILLS.size} commits (one per skill).`);
+          line('  (use "contact" to open a pull request)', "l-dim");
+          line("");
+          line("nothing to commit, working tree clean", "l-ok");
+        },
+
+        ping([target = ""]) {
+          const host = target.toLowerCase();
+          if (!host) {
+            line("usage: ping moutrine", "l-err");
+            return;
+          }
+          if (host.includes("pigeon")) {
+            pingPigeon(host);
+            return;
+          }
+          if (!isMe(host)) {
+            line(`ping: cannot resolve ${host}: Unknown host`, "l-err");
+            return;
+          }
+          line(`PING ${host} (10.13.67.1): 56 data bytes`);
+          for (let seq = 0; seq < 3; seq++) {
+            later(450 * (seq + 1), () => {
+              const ms = (0.3 + Math.random() * 0.2).toFixed(2);
+              line(`64 bytes from ${host}: icmp_seq=${seq} ttl=64 time=${ms} ms`);
+            });
+          }
+          later(1500, () => {
+            line(`--- ${host} ping statistics ---`);
+            line("3 packets transmitted, 3 packets received, 0.0% packet loss");
+            line("Reachable. Fastest route: type contact", "l-ok");
+          });
+        },
+
+        traceroute([target = "moutrine"]) {
+          const host = target.toLowerCase();
+          if (!isMe(host)) {
+            line(`traceroute: unknown host ${host}`, "l-err");
+            return;
+          }
+          line(`traceroute to ${host}, 30 hops max, 60 byte packets`);
+          const hops = [
+            ["your-browser.local", "0.31"],
+            ["linkedin.com", "8.42"],
+            ["inbox.moutrine", "11.07"],
+            ["moutrine", "12.66"]
+          ];
+          hops.forEach(([name, ms], i) => {
+            const cls = i === hops.length - 1 ? "l-ok" : "l-out";
+            later(400 * (i + 1), () => line(` ${i + 1}  ${name.padEnd(22)}${ms} ms`, cls));
+          });
+        },
+
+        contact() {
+          write("l-out", "LinkedIn  ", link("linkedin.com/in/moutrine-william", PROFILE.linkedin));
+          write("l-dim", "Pigeon    IP over Avian Carriers, ", link("RFC 1149", RFC1149), " (expect high latency)");
+        },
+
+        sudo([sub = ""]) {
+          if (sub.toLowerCase() !== "hire") {
+            line('sudo: only "sudo hire" is allowed here', "l-err");
+            return;
+          }
+          line("[sudo] password for visitor: ********", "l-dim");
+          line("Access granted. Scrolling to contact.", "l-ok");
+          setTimeout(() => scrollToSection("contact"), 450);
+        },
+
+        clear() {
+          out.replaceChildren();
+        }
+      };
+      COMMANDS.podman = COMMANDS.docker;
+
+      function run(raw) {
+        const cmd = raw.trim();
+        if (!cmd) return;
+
+        echo(cmd);
+        history.push(cmd);
+        historyIndex = history.length;
+
+        const [name, ...args] = cmd.split(/\s+/);
+        const key = name.toLowerCase();
+        const command = Object.prototype.hasOwnProperty.call(COMMANDS, key) ? COMMANDS[key] : null;
+
+        if (command) command(args);
+        else line(`command not found: ${name}. Type "help" to see commands.`, "l-err");
+        toEnd();
+      }
+
+      /* ---- Input ---- */
+      form.addEventListener("submit", e => {
+        e.preventDefault();
+        run(input.value);
+        input.value = "";
+      });
+
+      // Shell-style history on ↑ / ↓
+      input.addEventListener("keydown", e => {
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          if (historyIndex > 0) input.value = history[--historyIndex];
+        } else if (e.key === "ArrowDown") {
+          e.preventDefault();
+          if (historyIndex < history.length - 1) {
+            input.value = history[++historyIndex];
+          } else {
+            historyIndex = history.length;
+            input.value = "";
+          }
+        }
+      });
+
+      // Clickable commands in the help listing
+      out.addEventListener("click", e => {
+        const button = e.target instanceof Element ? e.target.closest("[data-cmd]") : null;
+        if (button) run(button.dataset.cmd);
+      });
+
+      // Suggestion chips under the prompt
+      document.querySelectorAll("[data-run]").forEach(button =>
+        button.addEventListener("click", () => run(button.dataset.run)));
+    }
+
+    /* ========================================================================
+       Contact: pigeon ping and copy buttons
+       ======================================================================== */
+    function initContact() {
+      const pigeonButton = $("#pigeon-ping");
+      const pigeonStatus = $("#pigeon-status");
+      let inFlight = false;
+
+      pigeonButton.addEventListener("click", () => {
+        if (inFlight) return;
+        inFlight = true;
+        pigeonButton.textContent = "In flight…";
+        pigeonStatus.textContent = "Packet released. Estimated arrival: sometime this week.";
+        setTimeout(() => {
+          pigeonButton.textContent = "Ping";
+          pigeonStatus.textContent = "Request timed out: 1 sent, 0 received, 100% packet loss. LinkedIn is faster.";
+          inFlight = false;
+        }, reduceMotion.matches ? 300 : 1800);
+      });
+
+      // Clipboard API when available; otherwise select the text so it can be copied by hand.
+      document.querySelectorAll("[data-copy]").forEach(button => {
+        const label = button.textContent;
+
+        const flash = text => {
+          button.textContent = text;
+          setTimeout(() => { button.textContent = label; }, 1800);
+        };
+
+        const selectText = () => {
+          const range = document.createRange();
+          range.selectNodeContents(document.getElementById(button.dataset.target));
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          flash("Selected");
+        };
+
+        button.addEventListener("click", () => {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(button.dataset.copy).then(() => flash("Copied"), selectText);
+          } else {
+            selectText();
+          }
+        });
+      });
+    }
+
+    /* ========================================================================
+       Custom cursor (precise pointers only)
+       ======================================================================== */
+    function initCursor() {
+      if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+      const SVG_NS = "http://www.w3.org/2000/svg";
+      const INTERACTIVE = "a, button, label.search, .chips li";
+      const TEXT_INPUT = 'input[type="text"], input[type="search"]';
+      const TIP = 2;   // px from the SVG's corner to the bolt's tip
+
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("viewBox", "0 0 28 32");
+      svg.setAttribute("focusable", "false");
+      const bolt = document.createElementNS(SVG_NS, "path");
+      bolt.setAttribute("class", "bolt");
+      bolt.setAttribute("d", "M2 2 L2 20 L7 15.5 L9.5 21 L7 22 L13 30.5 L12 23.5 L14.5 22.5 L11 15.5 L17 15.5 Z");
+      svg.append(bolt);
+
+      const cursor = el("div", { class: "cur", "aria-hidden": "true" }, svg);
+      document.body.append(cursor);
+      document.documentElement.classList.add("cc");
+
+      const isMouse = e => e.pointerType === "mouse";
+      const moveTo = (node, x, y) => { node.style.transform = `translate3d(${x}px, ${y}px, 0)`; };
+
+      document.addEventListener("pointermove", e => {
+        if (!isMouse(e)) return;
+        moveTo(cursor, e.clientX - TIP, e.clientY - TIP);
+        const target = e.target instanceof Element ? e.target : null;
+        const onText = Boolean(target && target.closest(TEXT_INPUT));
+        cursor.classList.add("on");
+        cursor.classList.toggle("hide", onText);
+        cursor.classList.toggle("hover", !onText && Boolean(target && target.closest(INTERACTIVE)));
+      }, { passive: true });
+
+      document.addEventListener("pointerdown", e => {
+        if (!isMouse(e)) return;
+        cursor.classList.add("down");
+        if (reduceMotion.matches) return;
+        const pulse = el("div", { class: "cur-pulse", "aria-hidden": "true" });
+        moveTo(pulse, e.clientX, e.clientY);
+        document.body.append(pulse);
+        setTimeout(() => pulse.remove(), 700);
+      });
+
+      document.addEventListener("pointerup", () => cursor.classList.remove("down"));
+      document.addEventListener("mouseout", e => { if (!e.relatedTarget) cursor.classList.remove("on"); });
+    }
+
+    /* ========================================================================
+       Background: rain and occasional lightning
+       ======================================================================== */
+    function initSky() {
+      const canvas = $("#sky");
+      const ctx = canvas.getContext && canvas.getContext("2d");
+      if (!ctx) return;
+
+      const RAIN = "114,208,197";    // --accent
+      const CHARGE = "255,110,199";  // --charge
+      const CORE = "255,228,244";    // white-hot centre of a bolt
+      const BOLT_LIFE = 1120;        // ms, the end of boltAlpha()'s fade
+
+      let w = 0;
+      let h = 0;
+      let drops = [];
+      let bolts = [];
+      let raf = null;
+      let nextBolt = 0;
+
+      const makeDrop = initial => ({
+        x: Math.random() * w,
+        y: initial ? Math.random() * h : -Math.random() * h * 0.3,
+        len: 10 + Math.random() * 26,
+        v: 0.5 + Math.random() * 1.3,
+        a: 0.04 + Math.random() * 0.12
+      });
+
+      // Midpoint displacement: nudges the midpoint sideways, recursing until segments are tiny.
+      function zigzag(x1, y1, x2, y2, disp, pts) {
+        if (disp < 3) {
+          pts.push([x2, y2]);
+          return;
+        }
+        const mx = (x1 + x2) / 2 + (Math.random() - 0.5) * disp;
+        const my = (y1 + y2) / 2 + (Math.random() - 0.5) * disp;
+        zigzag(x1, y1, mx, my, disp / 2, pts);
+        zigzag(mx, my, x2, y2, disp / 2, pts);
+      }
+
+      // A mostly horizontal bolt with two forks.
+      function makeBolt(now) {
+        const len = Math.max(w, h) * (0.32 + Math.random() * 0.3);
+        const x1 = Math.random() * w;
+        const y1 = h * (0.08 + Math.random() * 0.84);
+        const angle = (Math.random() < 0.5 ? 0 : Math.PI) + (Math.random() - 0.5) * 0.8;
+        const x2 = x1 + Math.cos(angle) * len;
+        const y2 = y1 + Math.sin(angle) * len;
+
+        const main = [[x1, y1]];
+        zigzag(x1, y1, x2, y2, len * 0.2, main);
+
+        const forks = [0.3, 0.6].map(pos => {
+          const start = main[Math.floor(main.length * (pos + Math.random() * 0.12))];
+          const forkAngle = angle + (Math.random() < 0.5 ? -1 : 1) * (0.4 + Math.random() * 0.5);
+          const forkLen = len * (0.18 + Math.random() * 0.2);
+          const pts = [start];
+          zigzag(start[0], start[1], start[0] + Math.cos(forkAngle) * forkLen, start[1] + Math.sin(forkAngle) * forkLen, forkLen * 0.25, pts);
+          return pts;
+        });
+
+        return { main, forks, t0: now };
+      }
+
+      // Flash in (0–80 ms), dip, re-strike (150–220 ms), then fade over 900 ms.
+      function boltAlpha(t) {
+        if (t < 80) return t / 80;
+        if (t < 150) return 1 - ((t - 80) / 70) * 0.55;
+        if (t < 220) return 0.45 + ((t - 150) / 70) * 0.45;
+        return Math.max(0, 0.9 * (1 - (t - 220) / 900));
+      }
+
+      function strokePath(pts) {
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        ctx.stroke();
+      }
+
+      function drawBolt(bolt, now) {
+        const a = boltAlpha(now - bolt.t0) * 0.55;
+        if (a <= 0) return;
+
+        ctx.save();
+        ctx.lineJoin = "round";
+
+        // Glow: main channel, then fainter forks
+        ctx.shadowColor = `rgba(${CHARGE},0.9)`;
+        ctx.shadowBlur = 22;
+        ctx.strokeStyle = `rgba(${CHARGE},${a})`;
+        ctx.lineWidth = 2.4;
+        strokePath(bolt.main);
+        ctx.strokeStyle = `rgba(${CHARGE},${a * 0.6})`;
+        ctx.lineWidth = 1.4;
+        bolt.forks.forEach(strokePath);
+
+        // Hot core
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = `rgba(${CORE},${a * 0.75})`;
+        ctx.lineWidth = 0.9;
+        strokePath(bolt.main);
+
+        ctx.restore();
+      }
+
+      function size() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        canvas.style.width = `${w}px`;
+        canvas.style.height = `${h}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        drops = Array.from({ length: Math.round(w / 20) }, () => makeDrop(true));
+      }
+
+      function draw(now) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 1;
+        for (const d of drops) {
+          ctx.strokeStyle = `rgba(${RAIN},${d.a})`;
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x, d.y - d.len);
+          ctx.stroke();
+        }
+        for (const bolt of bolts) drawBolt(bolt, now);
+      }
+
+      function frame(now) {
+        for (const d of drops) {
+          d.y += d.v;
+          if (d.y - d.len > h) Object.assign(d, makeDrop(false));
+        }
+        if (now >= nextBolt) {
+          bolts.push(makeBolt(now));
+          nextBolt = now + 4000 + Math.random() * 5000;
+        }
+        bolts = bolts.filter(bolt => now - bolt.t0 < BOLT_LIFE);
+        draw(now);
+        raf = requestAnimationFrame(frame);
+      }
+
+      const redraw = () => draw(performance.now());
+
+      const start = () => {
+        if (raf || reduceMotion.matches || document.hidden) return;
+        nextBolt = Math.max(nextBolt, performance.now() + 1500 + Math.random() * 2000);
+        raf = requestAnimationFrame(frame);
+      };
+
+      const stop = () => {
+        if (raf) cancelAnimationFrame(raf);
+        raf = null;
+        bolts = [];
+      };
+
+      size();
+      redraw();
+      start();
+
+      window.addEventListener("resize", () => { size(); redraw(); });
+      document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+
+      // MediaQueryList.addEventListener is missing in older Safari; the page simply won't react live there.
+      if (reduceMotion.addEventListener) {
+        reduceMotion.addEventListener("change", () => {
+          if (reduceMotion.matches) {
+            stop();
+            redraw();
+          } else {
+            start();
+          }
+        });
+      }
+    }
+
+    /* ========================================================================
+       Boot
+       ======================================================================== */
+    initStats();
+    initSkills();
+    initTerminal();
+    initContact();
+    initCursor();
+    initSky();
+  })();
+  </script>
+</body>
+</html>
